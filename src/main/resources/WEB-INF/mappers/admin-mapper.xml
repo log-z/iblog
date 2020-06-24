@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.log.blog.mapper.AdminMapper">
+    <resultMap id="adminResultMap" type="com.log.blog.entity.Admin">
+        <id property="adminId" column="admin_id" />
+        <result property="adminName" column="admin_name" />
+        <result property="adminEmail" column="admin_email" />
+        <result property="adminPassword" column="admin_password" />
+    </resultMap>
+
+    <select id="getAdminById" resultMap="adminResultMap">
+        select * from admin where admin_id=#{id};
+    </select>
+
+    <select id="getAdminByEmail" resultMap="adminResultMap">
+        select * from admin where admin_email=#{email};
+    </select>
+
+    <select id="getAllAdmin" resultMap="adminResultMap">
+        select * from admin limit #{range.offset},#{range.num};
+    </select>
+
+    <insert id="insertAdmin">
+        insert into admin(admin_name, admin_email, admin_password)
+        values (#{admin.adminName}, #{admin.adminEmail}, #{admin.adminPassword})
+    </insert>
+
+    <delete id="deleteAdmin">
+        delete from admin where admin_id=#{adminId};
+    </delete>
+
+</mapper>
