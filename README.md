@@ -37,6 +37,7 @@
     * 防XSS攻击：采用Apache的Text库把特殊字符编码为HTML实体。
 * 数据
     * 数据源：采用SpringJDBC库和MyBatisSpring库管理数据源（MySQL）。
+    * 验证：采用HibernateValidator库简化数据验证过程。
     * 文件：采用Apache的FileUpload库实现图片上传。
 * 视图
     * 模板引擎：JSP。

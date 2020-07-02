@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
-    <mvc:annotation-driven />
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/mvc
+            https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <mvc:annotation-driven validator="globalValidator" />
     <mvc:resources mapping="/static/**" location="static/" />
     <mvc:interceptors>
         <mvc:interceptor>
@@ -10,6 +13,7 @@
             <mvc:mapping path="/edit/**"/>
             <mvc:mapping path="/update/**"/>
             <mvc:mapping path="/logout"/>
+            <mvc:exclude-mapping path="/{userId:\d+}"/>
             <bean class="com.log.blog.interceptor.UserRequiredInterceptor" />
         </mvc:interceptor>
         <mvc:interceptor>
@@ -39,7 +43,10 @@
         </mvc:interceptor>
     </mvc:interceptors>
 
+    <!--  Password Encoder  -->
     <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+    <!--  MyBatis Config  -->
     <bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://localhost:3306/blog?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=UTC" />
@@ -59,10 +66,23 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory" />
     </bean>
 
+    <!--  Resolvers  -->
     <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/templates/" />
     </bean>
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="10485760" />
     </bean>
+
+    <!--  Validators  -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="classpath:ValidationMessages" />
+        <property name="defaultEncoding" value="utf-8" />
+        <property name="cacheSeconds" value="120" />
+    </bean>
+    <bean id="globalValidator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+        <property name="validationMessageSource" ref="messageSource" />
+    </bean>
+    <bean id="registerValidator" class="com.log.blog.validator.RegisterValidator" />
 </beans>

@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
             User user = userMapper.getUserById(userId);
             if (user != null && passwordEncoder.matches(oldPassword, user.getUserPassword())) {
                 User newUser = new User();
+                newUser.setUserId(userId);
                 newUser.setUserPassword(passwordEncoder.encode(newPassword));
                 userMapper.updateUser(newUser);
                 return true;

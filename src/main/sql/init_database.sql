@@ -8,7 +8,7 @@ use blog;
 create table admin (
     admin_id int(11) unsigned zerofill primary key auto_increment,
     admin_name varchar(20) not null,
-    admin_email varchar(40) unique not null,
+    admin_email varchar(320) unique not null,
     admin_password char(50) not null
 );
 
@@ -16,7 +16,7 @@ create table admin (
 create table user (
     user_id int(11) unsigned zerofill primary key auto_increment,
     user_name varchar(20) not null,
-    user_email varchar(40) unique not null,
+    user_email varchar(320) unique not null,
     user_password char(60) not null
 );
 

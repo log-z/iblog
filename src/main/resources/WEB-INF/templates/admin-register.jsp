@@ -1,4 +1,5 @@
 <%@ page pageEncoding="utf-8" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,14 +10,22 @@
 </head>
 <body>
     <h1>管理员注册</h1>
-    <p>${msg}</p>
-    <form method="post">
-        <label>姓名: <input name="adminName"></label><br>
-        <label>邮箱: <input name="adminEmail" type="email"></label><br>
-        <label>密码: <input name="adminPassword" type="password"></label><br>
-        <label>再次输入密码: <input name="adminPasswordAgain" type="password"></label><br>
+    <p>${adminRegister.adminEmail == null ? "" : "注册失败。"}</p>
+    <form:form modelAttribute="adminRegister" method="post">
+        <label>姓名: <form:input path="adminName" maxlength="20" required="required" /></label>
+        <form:errors path="adminName" delimiter="; " />
+        <br>
+        <label>邮箱: <form:input path="adminEmail" type="email" maxlength="320" required="required" /></label>
+        <form:errors path="adminEmail" delimiter=", " />
+        <br>
+        <label>密码: <input name="adminPassword" type="password" minlength="8" required></label>
+        <form:errors path="adminPassword" delimiter="; " />
+        <br>
+        <label>再次输入密码: <input name="adminPasswordAgain" type="password" minlength="8" required></label>
+        <form:errors path="adminPasswordAgain" delimiter="; " />
+        <br>
         <input type="submit" value="注册">
         <a href="${pageContext.request.contextPath}/admin/login">[登陆]</a>
-    </form>
+    </form:form>
 </body>
 </html>

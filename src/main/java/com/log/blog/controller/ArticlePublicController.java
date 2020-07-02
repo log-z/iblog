@@ -31,7 +31,7 @@ public class ArticlePublicController {
         this.userPublicService = userPublicService;
     }
 
-    @GetMapping("/index")
+    @GetMapping("/")
     public String portal(
             @RequestParam(required = false) Integer num,
             @RequestParam(required = false) Integer offset,
