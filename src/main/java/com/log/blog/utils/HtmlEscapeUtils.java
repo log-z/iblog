@@ -1,5 +1,7 @@
 package com.log.blog.utils;
 
+import com.log.blog.dto.UpdateArticleForm;
+import com.log.blog.dto.UpdateNameForm;
 import com.log.blog.entity.Admin;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
@@ -36,6 +38,19 @@ public class HtmlEscapeUtils {
         article.setContent(escape(article.getContent()));
         article.setImage(escape(article.getImage()));
         return article;
+    }
+
+    public static UpdateArticleForm escape(UpdateArticleForm form) {
+        if (form == null) return null;
+        form.setTitle(escape(form.getTitle()));
+        form.setContent(escape(form.getContent()));
+        return form;
+    }
+
+    public static UpdateNameForm escape(UpdateNameForm form) {
+        if (form == null) return null;
+        form.setName(escape(form.getName()));
+        return form;
     }
 
     public static List<Admin> escapeAdmins(List<Admin> admins) {

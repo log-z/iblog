@@ -22,12 +22,12 @@ import javax.servlet.http.HttpSession;
 public class AdminPublicController {
     public final static String SESSION_KEY_ADMIN_IDENTITY = "adminIdentity";
     private AdminPublicService adminPublicService;
-    private Validator registerValidator;
+    private Validator passwordAgainValidator;
 
     @Autowired
-    public void init(AdminPublicService adminPublicService, @Qualifier("registerValidator") Validator registerValidator) {
+    public void init(AdminPublicService adminPublicService, @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
         this.adminPublicService = adminPublicService;
-        this.registerValidator = registerValidator;
+        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @GetMapping("/register")
@@ -44,7 +44,7 @@ public class AdminPublicController {
             Model model
     ) {
         if (!errors.hasErrors()) {
-            registerValidator.validate(adminRegister, errors);
+            passwordAgainValidator.validate(adminRegister, errors);
         }
         if (!errors.hasErrors() && adminPublicService.register(adminRegister)) {
             session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminRegister.getAdminId());

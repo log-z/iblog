@@ -5,14 +5,14 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>${keyword == null ? "博客主页" : "包含“%s”文章".formatted(keyword)}</title>
+    <title>${keyword == null ? "博客主页" : "包含“%s”的文章".formatted(keyword)}</title>
 </head>
 <body>
-    <h1>${keyword == null ? "博客主页" : "包含“%s”文章".formatted(keyword)}</h1>
+    <h1>${keyword == null ? "博客主页" : "包含“%s”的文章".formatted(keyword)}</h1>
     <ul>
         <%@ include file="include/inc-header-actions.jsp" %>
     </ul>
-    <form action="#">
+    <form action="${pageContext.request.contextPath}/s">
         <input name="keyword" value="${keyword}">
         <input type="submit" value="搜索">
     </form>

@@ -84,5 +84,5 @@
         <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
         <property name="validationMessageSource" ref="messageSource" />
     </bean>
-    <bean id="registerValidator" class="com.log.blog.validator.RegisterValidator" />
+    <bean id="passwordAgainValidator" class="com.log.blog.validator.PasswordAgainValidator" />
 </beans>

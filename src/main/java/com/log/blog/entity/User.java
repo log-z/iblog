@@ -8,7 +8,7 @@ import java.util.Objects;
 public class User {
     private String userId;
 
-    @Pattern(regexp = "[\\w-]{1,20}", groups = register.class, message = "{name.invalid}")
+    @Pattern(regexp = "[\\w\\u4e00-\\u9fa5\\-]{1,20}", groups = register.class, message = "{name.invalid}")
     private String userName;
 
     @BasicEmail(groups = {register.class, login.class}, message = "{email.invalid}")

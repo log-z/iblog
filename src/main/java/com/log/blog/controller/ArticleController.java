@@ -1,5 +1,6 @@
 package com.log.blog.controller;
 
+import com.log.blog.dto.UpdateArticleForm;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
@@ -9,8 +10,9 @@ import com.log.blog.utils.HtmlEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class ArticleController {
@@ -25,13 +27,15 @@ public class ArticleController {
 
     @GetMapping({"/edit/", "/edit/{articleId:[A-Za-z\\d]{32}}"})
     public String edit(@PathVariable(required = false) String articleId, Model model) {
-        Article article;
-        if (articleId == null) {
-            article = new Article();
-        } else {
-            article = articlePublicService.getArticle(articleId);
+        UpdateArticleForm form = new UpdateArticleForm();
+        if (articleId != null) {
+            Article article = articlePublicService.getArticle(articleId);
+            if (article != null) {
+                form.setTitle(article.getTitle());
+                form.setContent(article.getContent());
+            }
         }
-        model.addAttribute("article", HtmlEscapeUtils.escape(article));
+        model.addAttribute("form", HtmlEscapeUtils.escape(form));
         return "article-editor.jsp";
     }
 
@@ -39,19 +43,23 @@ public class ArticleController {
     public String update(
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
             @PathVariable(required = false) String articleId,
-            String title,
-            @RequestParam(required = false) String content,
-            MultipartFile image,
+            @Validated @ModelAttribute("form") UpdateArticleForm form,
+            BindingResult errors,
             Model model
     ) {
-        Article article = new Article();
-        article.setTitle(title);
-        article.setContent(content);
-        article.setImage(articleService.uploadImage(image));
-        boolean successful = articleId == null
-                ? articleService.insertArticle(user.getUserId(), article)
-                : articleService.updateArticle(articleId, article);
-        model.addAttribute("successful", successful);
-        return "article-updated.jsp";
+        if (!errors.hasErrors()) {
+            // 准备文章载体
+            Article article = new Article();
+            article.setTitle(form.getTitle());
+            article.setContent(form.getContent());
+            article.setImage(articleService.uploadImage(form.getImage()));
+            // 创建或更新文章
+            boolean successful = articleId == null
+                    ? articleService.insertArticle(user.getUserId(), article)
+                    : articleService.updateArticle(articleId, article);
+            model.addAttribute("successful", successful);
+            return "article-updated.jsp";
+        }
+        return "article-editor.jsp";
     }
 }

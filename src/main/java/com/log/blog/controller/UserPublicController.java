@@ -8,12 +8,12 @@ import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.ArticlePublicService;
 import com.log.blog.service.UserPublicService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import com.log.blog.validator.RegisterValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,17 +26,17 @@ public class UserPublicController {
     private static final int LIST_ITEM_NUMBER = 10;
     private UserPublicService userPublicService;
     private ArticlePublicService articlePublicService;
-    private RegisterValidator registerValidator;
+    private Validator passwordAgainValidator;
 
     @Autowired
     public void init(
             UserPublicService userPublicService,
             ArticlePublicService articlePublicService,
-            @Qualifier("registerValidator") RegisterValidator registerValidator
+            @Qualifier("passwordAgainValidator") Validator passwordAgainValidator
     ) {
         this.userPublicService = userPublicService;
         this.articlePublicService = articlePublicService;
-        this.registerValidator = registerValidator;
+        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @GetMapping("/register")
@@ -53,7 +53,7 @@ public class UserPublicController {
             Model model
     ) {
         if (!errors.hasErrors()) {
-            registerValidator.validate(userRegister, errors);
+            passwordAgainValidator.validate(userRegister, errors);
         }
         if (!errors.hasErrors() && userPublicService.register(userRegister)) {
             session.setAttribute(SESSION_KEY_USER_IDENTITY, userRegister.getUserId());
