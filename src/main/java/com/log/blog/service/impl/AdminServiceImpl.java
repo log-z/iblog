@@ -2,7 +2,6 @@ package com.log.blog.service.impl;
 
 import com.log.blog.dto.Range;
 import com.log.blog.entity.Admin;
-import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.mapper.AdminMapper;
 import com.log.blog.mapper.ArticleMapper;
@@ -41,9 +40,18 @@ public class AdminServiceImpl implements AdminService {
     @Override
     public List<User> getUsers(@NonNull Range range) {
         try {
-            return userMapper.getAllUser(range);
+            return userMapper.getAllUsers(range);
         } catch (SQLException e) {
             return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public long getUsersCount() {
+        try {
+            return userMapper.getUsersCount();
+        } catch (SQLException e) {
+            return -1;
         }
     }
 

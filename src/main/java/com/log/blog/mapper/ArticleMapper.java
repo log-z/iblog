@@ -11,10 +11,14 @@ import java.util.List;
 public interface ArticleMapper {
     Article getArticle(@Param("id") @NonNull String id) throws SQLException;
 
-    List<Article> getAllArticle(@Param("range") Range range) throws SQLException;
+    List<Article> getAllArticles(@Param("range") Range range) throws SQLException;
+
+    long getArticlesCount() throws SQLException;
 
     List<Article> findArticles(@Param("feature") @NonNull Article feature, @Param("range") @NonNull Range range)
             throws SQLException;
+
+    long findArticlesCount(@Param("feature") @NonNull Article feature) throws SQLException;
 
     void insetArticle(@Param("article") @NonNull Article article) throws SQLException;
 

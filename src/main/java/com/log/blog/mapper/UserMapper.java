@@ -12,7 +12,9 @@ public interface UserMapper {
 
     User getUserByEmail(@Param("email") String email) throws SQLException;
 
-    List<User> getAllUser(@Param("range") Range range) throws SQLException;
+    List<User> getAllUsers(@Param("range") Range range) throws SQLException;
+
+    long getUsersCount() throws SQLException;
 
     void insertUser(@Param("user") User user) throws SQLException;
 

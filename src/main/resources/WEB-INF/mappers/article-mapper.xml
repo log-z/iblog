@@ -15,8 +15,12 @@
         select * from article where article_id = #{id};
     </select>
     
-    <select id="getAllArticle" resultMap="articleResultMap">
-        select * from article;
+    <select id="getAllArticles" resultMap="articleResultMap">
+        select * from article limit #{range.offset},#{range.num};
+    </select>
+
+    <select id="getArticlesCount" resultType="java.lang.Long">
+        select count(article_id) from article;
     </select>
 
     <select id="findArticles" resultMap="articleResultMap">
@@ -28,15 +32,34 @@
             or author_id=#{feature.authorId}
         </if>
         <if test="feature.title != null">
-            or title like #{feature.title}
+            or title like concat('%', #{feature.title}, '%')
         </if>
         <if test="feature.content != null">
-            or content=#{feature.content}
+            or content like concat('%', #{feature.content}, '%')
         </if>
         <if test="feature.createTime != null">
             or create_time=#{feature.createTime}
         </if>
         limit #{range.offset},#{range.num};
+    </select>
+
+    <select id="findArticlesCount" resultType="java.lang.Long">
+        select count(article_id) from article where false
+        <if test="feature.articleId != null">
+            or article_id=#{feature.articleId}
+        </if>
+        <if test="feature.authorId != null">
+            or author_id=#{feature.authorId}
+        </if>
+        <if test="feature.title != null">
+            or title like concat('%', #{feature.title}, '%')
+        </if>
+        <if test="feature.content != null">
+            or content like concat('%', #{feature.content}, '%')
+        </if>
+        <if test="feature.createTime != null">
+            or create_time=#{feature.createTime}
+        </if>;
     </select>
 
     <insert id="insetArticle">

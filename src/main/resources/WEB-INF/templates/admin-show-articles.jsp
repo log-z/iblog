@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>管理文章</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/components.css">
 </head>
 <body>
     <h1>管理文章</h1>
@@ -29,5 +30,12 @@
         </tr>
         <% } %>
     </table>
+
+    <div class="pagination" page-size="${range.num}" page-offset="${range.offset}" total="${articlesCount}"></div>
+
+    <!--  scripts  -->
+    <script src="${pageContext.request.contextPath}/static/js/basic.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/components.js"></script>
 </body>
 </html>

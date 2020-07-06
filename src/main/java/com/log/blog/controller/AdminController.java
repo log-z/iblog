@@ -47,6 +47,8 @@ public class AdminController {
         Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
         List<User> users = adminService.getUsers(range);
         model.addAttribute("users", HtmlEscapeUtils.escapeUsers(users));
+        model.addAttribute("usersCount", adminService.getUsersCount());
+        model.addAttribute("range", range);
         return "admin-show-users.jsp";
     }
 
@@ -59,6 +61,8 @@ public class AdminController {
         Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
         List<Article> articles = articlePublicService.getArticles(range);
         model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+        model.addAttribute("articlesCount", articlePublicService.getArticlesCount());
+        model.addAttribute("range", range);
         return "admin-show-articles.jsp";
     }
 

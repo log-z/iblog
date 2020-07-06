@@ -105,6 +105,8 @@ public class UserPublicController {
         Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
         List<Article> articles = articlePublicService.search(feature, range);
         model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+        model.addAttribute("articlesCount", articlePublicService.searchCount(feature));
+        model.addAttribute("range", range);
 
         boolean editable = false;
         if (currentUser != null && currentUser.getUserId().equals(targetUserId))

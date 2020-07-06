@@ -9,8 +9,11 @@ import java.util.List;
 
 public interface ArticlePublicService {
     List<Article> getArticles(@NonNull Range range);
+    long getArticlesCount();
     Article getArticle(@NonNull String articleId);
     List<Article> search(@NonNull String keyword, @NonNull Range range);
     List<Article> search(@NonNull Article feature, @NonNull Range range);
+    long searchCount(@NonNull String keyword);
+    long searchCount(@NonNull Article feature);
     boolean sendImage(@NonNull String image, @NonNull OutputStream outputStream);
 }

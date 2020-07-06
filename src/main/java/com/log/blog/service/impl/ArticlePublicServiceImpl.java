@@ -28,7 +28,7 @@ public class ArticlePublicServiceImpl implements ArticlePublicService {
     }
 
     @Override
-    public Article getArticle(String articleId) {
+    public Article getArticle(@NonNull String articleId) {
         try {
             return articleMapper.getArticle(articleId);
         } catch (SQLException e) {
@@ -39,9 +39,18 @@ public class ArticlePublicServiceImpl implements ArticlePublicService {
     @Override
     public List<Article> getArticles(@NonNull Range range) {
         try {
-            return articleMapper.getAllArticle(range);
+            return articleMapper.getAllArticles(range);
         } catch (SQLException e) {
             return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public long getArticlesCount() {
+        try {
+            return articleMapper.getArticlesCount();
+        } catch (SQLException e) {
+            return -1;
         }
     }
 
@@ -63,7 +72,24 @@ public class ArticlePublicServiceImpl implements ArticlePublicService {
     }
 
     @Override
-    public boolean sendImage(String image, OutputStream outputStream) {
+    public long searchCount(@NonNull String keyword) {
+        Article feature = new Article();
+        feature.setTitle(keyword);
+        feature.setContent(keyword);
+        return searchCount(feature);
+    }
+
+    @Override
+    public long searchCount(@NonNull Article feature) {
+        try {
+            return articleMapper.findArticlesCount(feature);
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean sendImage(@NonNull String image, @NonNull OutputStream outputStream) {
         File file = new File(uploadRootPath + imagesDir + image);
         if (!file.exists())
             return false;

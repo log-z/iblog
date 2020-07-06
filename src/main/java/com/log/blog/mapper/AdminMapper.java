@@ -12,7 +12,9 @@ public interface AdminMapper {
 
     Admin getAdminByEmail(@Param("email") String email) throws SQLException;
 
-    List<Admin> getAllAdmin(@Param("range") Range range) throws SQLException;
+    List<Admin> getAllAdmins(@Param("range") Range range) throws SQLException;
+
+    long getAdminsCount() throws SQLException;
 
     void insertAdmin(@Param("admin") Admin admin) throws SQLException;
 

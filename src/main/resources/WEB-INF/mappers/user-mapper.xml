@@ -17,8 +17,12 @@
         select * from user where user_email=#{email};
     </select>
 
-    <select id="getAllUser" resultMap="userResultMap">
+    <select id="getAllUsers" resultMap="userResultMap">
         select * from user limit #{range.offset},#{range.num};
+    </select>
+
+    <select id="getUsersCount" resultType="java.lang.Long">
+        select count(user_id) from user;
     </select>
 
     <insert id="insertUser">

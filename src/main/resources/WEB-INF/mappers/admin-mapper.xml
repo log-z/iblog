@@ -17,8 +17,12 @@
         select * from admin where admin_email=#{email};
     </select>
 
-    <select id="getAllAdmin" resultMap="adminResultMap">
+    <select id="getAllAdmins" resultMap="adminResultMap">
         select * from admin limit #{range.offset},#{range.num};
+    </select>
+
+    <select id="getAdminsCount" resultType="java.lang.Long">
+        select count(admin_id) from admin;
     </select>
 
     <insert id="insertAdmin">

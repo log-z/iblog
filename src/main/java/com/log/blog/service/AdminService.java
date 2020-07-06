@@ -11,6 +11,7 @@ import java.util.List;
 public interface AdminService {
     Admin getAdmin(@NonNull String adminId);
     List<User> getUsers(@NonNull Range range);
+    long getUsersCount();
     boolean deleteUser(@NonNull String userId);
     boolean deleteArticle(@NonNull String articleId);
 }

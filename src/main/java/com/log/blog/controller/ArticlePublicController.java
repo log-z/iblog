@@ -40,6 +40,8 @@ public class ArticlePublicController {
         Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
         List<Article> articles = articlePublicService.getArticles(range);
         model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+        model.addAttribute("articlesCount", articlePublicService.getArticlesCount());
+        model.addAttribute("range", range);
         return "article-search.jsp";
     }
 
@@ -50,11 +52,17 @@ public class ArticlePublicController {
             String keyword,
             Model model
     ) {
-        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<Article> articles = articlePublicService.search(keyword, range);
-        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
-        return "article-search.jsp";
+        if (keyword.isBlank()) {
+            return "redirect:/";
+        } else {
+            Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
+            List<Article> articles = articlePublicService.search(keyword, range);
+            model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+            model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
+            model.addAttribute("articlesCount", articlePublicService.searchCount(keyword));
+            model.addAttribute("range", range);
+            return "article-search.jsp";
+        }
     }
 
     @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
