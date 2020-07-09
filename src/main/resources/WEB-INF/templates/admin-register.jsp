@@ -10,8 +10,8 @@
 </head>
 <body>
     <h1>管理员注册</h1>
-    <p>${adminRegister.adminEmail == null ? "" : "注册失败。"}</p>
-    <form:form modelAttribute="adminRegister" method="post">
+    <p>${adminRegisterForm.adminEmail == null ? "" : "注册失败。"}</p>
+    <form:form modelAttribute="adminRegisterForm" method="post">
         <label>姓名: <form:input path="adminName" maxlength="20" required="required" /></label>
         <form:errors path="adminName" delimiter="; " />
         <br>

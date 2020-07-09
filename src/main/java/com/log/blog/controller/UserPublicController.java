@@ -1,7 +1,7 @@
 package com.log.blog.controller;
 
 import com.log.blog.dto.Range;
-import com.log.blog.dto.UserRegister;
+import com.log.blog.dto.UserRegisterForm;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
@@ -41,25 +41,25 @@ public class UserPublicController {
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("userRegister", new UserRegister());
+        model.addAttribute("userRegisterForm", new UserRegisterForm());
         return "user-register.jsp";
     }
 
     @PostMapping(value = "/register")
     public String register(
-            @Validated(User.register.class) UserRegister userRegister,
+            @Validated(User.register.class) UserRegisterForm userRegisterForm,
             BindingResult errors,
             HttpSession session,
             Model model
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(userRegister, errors);
+            passwordAgainValidator.validate(userRegisterForm, errors);
         }
-        if (!errors.hasErrors() && userPublicService.register(userRegister)) {
-            session.setAttribute(SESSION_KEY_USER_IDENTITY, userRegister.getUserId());
+        if (!errors.hasErrors() && userPublicService.register(userRegisterForm)) {
+            session.setAttribute(SESSION_KEY_USER_IDENTITY, userRegisterForm.getUserId());
             return "redirect:/login";
         } else {
-            model.addAttribute("userRegister", HtmlEscapeUtils.escape(userRegister));
+            model.addAttribute("userRegisterForm", HtmlEscapeUtils.escape(userRegisterForm));
             return "user-register.jsp";
         }
     }

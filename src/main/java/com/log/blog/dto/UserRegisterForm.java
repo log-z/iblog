@@ -4,7 +4,7 @@ import com.log.blog.entity.User;
 
 import javax.validation.constraints.Pattern;
 
-public class UserRegister extends User {
+public class UserRegisterForm extends User {
     @Pattern(regexp = "[a-z0-9]{64}", groups = register.class, message = "{password.invalid}")
     private String userPasswordAgain;
 

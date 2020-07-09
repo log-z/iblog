@@ -1,6 +1,6 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.AdminRegister;
+import com.log.blog.dto.AdminRegisterForm;
 import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminPublicService;
 import com.log.blog.utils.HtmlEscapeUtils;
@@ -32,25 +32,25 @@ public class AdminPublicController {
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("adminRegister", new AdminRegister());
+        model.addAttribute("adminRegisterForm", new AdminRegisterForm());
         return "admin-register.jsp";
     }
 
     @PostMapping(value = "/register")
     public String register(
-            @Validated(Admin.register.class) AdminRegister adminRegister,
+            @Validated(Admin.register.class) AdminRegisterForm adminRegisterForm,
             BindingResult errors,
             HttpSession session,
             Model model
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(adminRegister, errors);
+            passwordAgainValidator.validate(adminRegisterForm, errors);
         }
-        if (!errors.hasErrors() && adminPublicService.register(adminRegister)) {
-            session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminRegister.getAdminId());
+        if (!errors.hasErrors() && adminPublicService.register(adminRegisterForm)) {
+            session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminRegisterForm.getAdminId());
             return "redirect:/admin/login";
         } else {
-            model.addAttribute("adminRegister", HtmlEscapeUtils.escape(adminRegister));
+            model.addAttribute("adminRegisterForm", HtmlEscapeUtils.escape(adminRegisterForm));
             return "admin-register.jsp";
         }
     }
