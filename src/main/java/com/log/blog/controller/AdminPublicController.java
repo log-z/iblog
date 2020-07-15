@@ -79,9 +79,9 @@ public class AdminPublicController {
         return "admin-login.jsp";
     }
 
-    @RequestMapping("/error/403")
+    @RequestMapping("/error/401")
     public String error403(Model model) {
         model.addAttribute("refreshPath", "/admin/login");
-        return "error-403.jsp";
+        return "error-401.jsp";
     }
 }

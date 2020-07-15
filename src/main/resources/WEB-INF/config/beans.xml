@@ -21,7 +21,7 @@
             <mvc:mapping path="/logout"/>
             <mvc:exclude-mapping path="/{userId:\d+}"/>
             <bean class="com.log.blog.interceptor.UserRequiredInterceptor">
-                <property name="errorPath" value="/error/403" />
+                <property name="errorPath" value="/error/401" />
             </bean>
         </mvc:interceptor>
         <!-- userOptionalInterceptor -->
@@ -46,7 +46,7 @@
             <mvc:exclude-mapping path="/admin/login"/>
             <mvc:exclude-mapping path="/admin/register"/>
             <bean class="com.log.blog.interceptor.AdminRequiredInterceptor">
-                <property name="errorPath" value="/admin/error/403" />
+                <property name="errorPath" value="/admin/error/401" />
             </bean>
         </mvc:interceptor>
         <!-- adminLoggedInterceptor -->

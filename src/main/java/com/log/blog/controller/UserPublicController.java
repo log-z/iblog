@@ -114,8 +114,8 @@ public class UserPublicController {
         return "user-home.jsp";
     }
 
-    @RequestMapping("/error/403")
-    public String error403() {
-        return "error-403.jsp";
+    @RequestMapping("/error/401")
+    public String error401() {
+        return "error-401.jsp";
     }
 }
