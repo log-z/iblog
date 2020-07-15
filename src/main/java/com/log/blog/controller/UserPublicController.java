@@ -5,9 +5,10 @@ import com.log.blog.dto.UserRegisterForm;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
-import com.log.blog.service.ArticlePublicService;
-import com.log.blog.service.UserPublicService;
+import com.log.blog.service.ArticleService;
+import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
+import com.log.blog.validator.PasswordAgainValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -24,18 +25,18 @@ import java.util.List;
 public class UserPublicController {
     public static final String SESSION_KEY_USER_IDENTITY = "userIdentity";
     private static final int LIST_ITEM_NUMBER = 10;
-    private UserPublicService userPublicService;
-    private ArticlePublicService articlePublicService;
+    private UserService userService;
+    private ArticleService articleService;
     private Validator passwordAgainValidator;
 
     @Autowired
     public void init(
-            UserPublicService userPublicService,
-            ArticlePublicService articlePublicService,
-            @Qualifier("passwordAgainValidator") Validator passwordAgainValidator
+            @Qualifier("userBasicService") UserService userService,
+            @Qualifier("articleBasicService") ArticleService articleService,
+            PasswordAgainValidator passwordAgainValidator
     ) {
-        this.userPublicService = userPublicService;
-        this.articlePublicService = articlePublicService;
+        this.userService = userService;
+        this.articleService = articleService;
         this.passwordAgainValidator = passwordAgainValidator;
     }
 
@@ -47,16 +48,14 @@ public class UserPublicController {
 
     @PostMapping(value = "/register")
     public String register(
-            @Validated(User.register.class) UserRegisterForm userRegisterForm,
+            @Validated(User.Register.class) UserRegisterForm userRegisterForm,
             BindingResult errors,
-            HttpSession session,
             Model model
     ) {
         if (!errors.hasErrors()) {
             passwordAgainValidator.validate(userRegisterForm, errors);
         }
-        if (!errors.hasErrors() && userPublicService.register(userRegisterForm)) {
-            session.setAttribute(SESSION_KEY_USER_IDENTITY, userRegisterForm.getUserId());
+        if (!errors.hasErrors() && userService.register(userRegisterForm)) {
             return "redirect:/login";
         } else {
             model.addAttribute("userRegisterForm", HtmlEscapeUtils.escape(userRegisterForm));
@@ -72,13 +71,13 @@ public class UserPublicController {
 
     @PostMapping("/login")
     public String login(
-            @Validated(User.login.class) User user,
+            @Validated(User.Login.class) User user,
             BindingResult errors,
             HttpSession session,
             Model model
     ) {
         if (!errors.hasErrors()) {
-            String userId = userPublicService.loginCheck(user);
+            String userId = userService.loginCheck(user);
             if (userId != null) {
                 session.setAttribute(SESSION_KEY_USER_IDENTITY, userId);
                 return "redirect:/"+ userId;
@@ -88,7 +87,7 @@ public class UserPublicController {
         return "user-login.jsp";
     }
 
-    @GetMapping("/{targetUserId:\\d+}")
+    @GetMapping("/{targetUserId:\\d{1,11}}")
     public String home(
             @PathVariable String targetUserId,
             @RequestAttribute(value = UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER, required = false) User currentUser,
@@ -96,16 +95,16 @@ public class UserPublicController {
             @RequestParam(required = false) Integer offset,
             Model model
     ) {
-        User targetUser = userPublicService.getUser(targetUserId);
+        User targetUser = userService.getUser(targetUserId);
         if (targetUser == null) return null;
         model.addAttribute("targetUser", HtmlEscapeUtils.escape(targetUser));
 
         Article feature = new Article();
         feature.setAuthorId(targetUserId);
         Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<Article> articles = articlePublicService.search(feature, range);
+        List<Article> articles = articleService.search(feature, range);
         model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("articlesCount", articlePublicService.searchCount(feature));
+        model.addAttribute("articlesCount", articleService.searchCount(feature));
         model.addAttribute("range", range);
 
         boolean editable = false;

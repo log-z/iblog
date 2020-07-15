@@ -1,11 +1,10 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.UpdateArticleForm;
+import com.log.blog.dto.ArticleForm;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
-import com.log.blog.service.ArticlePublicService;
-import com.log.blog.service.ArticleService;
+import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,20 +15,18 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class ArticleController {
-    private ArticleService articleService;
-    private ArticlePublicService articlePublicService;
+    private ArticleAdvancedService articleAdvancedService;
 
     @Autowired
-    public void init(ArticleService articleService, ArticlePublicService articlePublicService) {
-        this.articleService = articleService;
-        this.articlePublicService = articlePublicService;
+    public void init(ArticleAdvancedService articleAdvancedService) {
+        this.articleAdvancedService = articleAdvancedService;
     }
 
     @GetMapping({"/edit/", "/edit/{articleId:[A-Za-z\\d]{32}}"})
     public String edit(@PathVariable(required = false) String articleId, Model model) {
-        UpdateArticleForm form = new UpdateArticleForm();
+        ArticleForm form = new ArticleForm();
         if (articleId != null) {
-            Article article = articlePublicService.getArticle(articleId);
+            Article article = articleAdvancedService.getArticle(articleId);
             if (article != null) {
                 form.setTitle(article.getTitle());
                 form.setContent(article.getContent());
@@ -43,7 +40,7 @@ public class ArticleController {
     public String update(
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
             @PathVariable(required = false) String articleId,
-            @Validated @ModelAttribute("form") UpdateArticleForm form,
+            @Validated(ArticleForm.Updating.class) @ModelAttribute("form") ArticleForm form,
             BindingResult errors,
             Model model
     ) {
@@ -52,11 +49,11 @@ public class ArticleController {
             Article article = new Article();
             article.setTitle(form.getTitle());
             article.setContent(form.getContent());
-            article.setImage(articleService.uploadImage(form.getImage()));
+            article.setImage(articleAdvancedService.uploadImage(form.getImage()));
             // 创建或更新文章
             boolean successful = articleId == null
-                    ? articleService.insertArticle(user.getUserId(), article)
-                    : articleService.updateArticle(articleId, article);
+                    ? articleAdvancedService.insertArticle(user.getUserId(), article) != null
+                    : articleAdvancedService.updateArticle(articleId, article);
             model.addAttribute("successful", successful);
             return "article-updated.jsp";
         }

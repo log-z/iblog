@@ -1,10 +1,10 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.UpdateNameForm;
-import com.log.blog.dto.UpdatePasswordForm;
+import com.log.blog.dto.NameForm;
+import com.log.blog.dto.PasswordForm;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
-import com.log.blog.service.UserService;
+import com.log.blog.service.UserAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,12 +19,13 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-    private UserService userService;
+    private UserAdvancedService userAdvancedService;
     private Validator passwordAgainValidator;
 
     @Autowired
-    public void init(UserService userService, @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
-        this.userService = userService;
+    public void init(UserAdvancedService userAdvancedService,
+                     @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
+        this.userAdvancedService = userAdvancedService;
         this.passwordAgainValidator = passwordAgainValidator;
     }
 
@@ -34,7 +35,7 @@ public class UserController {
         return "redirect:/login";
     }
 
-    @GetMapping("/{userId:\\d+}/info")
+    @GetMapping("/{userId:\\d{1,11}}/info")
     public String showInfo(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user
@@ -44,14 +45,14 @@ public class UserController {
         return null;
     }
 
-    @GetMapping("/{userId:\\d+}/update-name")
+    @GetMapping("/{userId:\\d{1,11}}/update-name")
     public String updateName(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
             Model model
     ) {
         if (user.getUserId().equals(userId)) {
-            UpdateNameForm form = new UpdateNameForm();
+            NameForm form = new NameForm();
             form.setName(user.getUserName());
             model.addAttribute("form", HtmlEscapeUtils.escape(form));
             return "user-update-name.jsp";
@@ -59,11 +60,11 @@ public class UserController {
         return null;  // 无权限
     }
 
-    @PostMapping("/{userId:\\d+}/update-name")
+    @PostMapping("/{userId:\\d{1,11}}/update-name")
     public String updateName(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
-            @Validated @ModelAttribute("form") UpdateNameForm form,
+            @Validated @ModelAttribute("form") NameForm form,
             BindingResult errors,
             Model model
     ) {
@@ -71,7 +72,7 @@ public class UserController {
             if (!user.getUserId().equals(userId)) {
                 return null;  // 无权限
             } else {
-                if (userService.updateName(userId, form.getName()))
+                if (userAdvancedService.updateName(userId, form.getName()))
                     return "redirect:/{userId}/info";
                 model.addAttribute("msg", "修改姓名失败。");
             }
@@ -79,24 +80,24 @@ public class UserController {
         return "user-update-name.jsp";
     }
 
-    @GetMapping("/{userId:\\d+}/update-password")
+    @GetMapping("/{userId:\\d{1,11}}/update-password")
     public String updatePassword(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
             Model model
     ) {
         if (user.getUserId().equals(userId)) {
-            model.addAttribute("form", new UpdatePasswordForm());
+            model.addAttribute("form", new PasswordForm());
             return "user-update-password.jsp";
         }
         return null;  // 无权限
     }
 
-    @PostMapping("/{userId:\\d+}/update-password")
+    @PostMapping("/{userId:\\d{1,11}}/update-password")
     public String updatePassword(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
-            @Validated @ModelAttribute("form") UpdatePasswordForm form,
+            @Validated @ModelAttribute("form") PasswordForm form,
             BindingResult errors,
             Model model
     ) {
@@ -106,7 +107,7 @@ public class UserController {
                 if (!user.getUserId().equals(userId)) {
                     return null;  // 无权限
                 } else {
-                    if (userService.updatePassword(userId, form.getOldPassword(), form.getNewPassword()))
+                    if (userAdvancedService.updatePassword(userId, form.getOldPassword(), form.getNewPassword()))
                         return "redirect:/{userId}/info";
                     model.addAttribute("msg", "修改密码失败。");
                 }

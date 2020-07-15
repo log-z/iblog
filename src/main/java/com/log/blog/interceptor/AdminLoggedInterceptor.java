@@ -2,7 +2,7 @@ package com.log.blog.interceptor;
 
 import com.log.blog.controller.AdminPublicController;
 import com.log.blog.entity.Admin;
-import com.log.blog.service.AdminService;
+import com.log.blog.service.AdminAdvancedService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -13,11 +13,11 @@ import javax.servlet.http.HttpSession;
 
 @Component
 public class AdminLoggedInterceptor implements HandlerInterceptor {
-    private AdminService adminService;
+    private AdminAdvancedService adminAdvancedService;
 
     @Autowired
-    public void init(AdminService adminService) {
-        this.adminService = adminService;
+    public void init(AdminAdvancedService adminAdvancedService) {
+        this.adminAdvancedService = adminAdvancedService;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class AdminLoggedInterceptor implements HandlerInterceptor {
         HttpSession session = request.getSession();
         Object adminId = session.getAttribute(AdminPublicController.SESSION_KEY_ADMIN_IDENTITY);
         if (adminId instanceof String) {
-            Admin currentAdmin = adminService.getAdmin((String) adminId);
+            Admin currentAdmin = adminAdvancedService.getAdmin((String) adminId);
             if (currentAdmin != null) {
                 request.setAttribute("redirectPath", "/admin");
                 request.getRequestDispatcher("/redirect").forward(request, response);

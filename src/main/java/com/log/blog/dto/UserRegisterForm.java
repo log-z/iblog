@@ -2,10 +2,12 @@ package com.log.blog.dto;
 
 import com.log.blog.entity.User;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 public class UserRegisterForm extends User {
-    @Pattern(regexp = "[a-z0-9]{64}", groups = register.class, message = "{password.invalid}")
+    @NotBlank(groups = Register.class)
+    @Pattern(regexp = "[a-z0-9]{64}", groups = Register.class, message = "{password.invalid}")
     private String userPasswordAgain;
 
     public String getUserPasswordAgain() {

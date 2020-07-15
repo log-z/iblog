@@ -1,8 +1,10 @@
 package com.log.blog.service;
 
+import com.log.blog.entity.User;
 import org.springframework.lang.NonNull;
 
 public interface UserService {
-    boolean updateName(@NonNull String userId, @NonNull String newName);
-    boolean updatePassword(@NonNull String userId, @NonNull String oldPassword, @NonNull String newPassword);
+    boolean register(@NonNull User user);
+    String loginCheck(@NonNull User user);
+    User getUser(@NonNull String userId);
 }

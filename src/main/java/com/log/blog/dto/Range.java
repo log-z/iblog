@@ -1,10 +1,17 @@
 package com.log.blog.dto;
 
+import javax.validation.constraints.PositiveOrZero;
 import java.util.Objects;
 
 public class Range {
+    @PositiveOrZero
     private int num;
+
+    @PositiveOrZero
     private int offset;
+
+    public Range() {
+    }
 
     public Range(int num) {
         this.num = num;

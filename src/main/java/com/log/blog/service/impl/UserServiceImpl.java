@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 
-@Service
+@Service("userBasicService")
 public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     private PasswordEncoder passwordEncoder;
@@ -22,12 +22,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateName(@NonNull String userId, @NonNull String newName) {
-        User user = new User();
-        user.setUserId(userId);
-        user.setUserName(newName);
+    public boolean register(@NonNull User user) {
         try {
-            userMapper.updateUser(user);
+            String encode = passwordEncoder.encode(user.getUserPassword());
+            user.setUserPassword(encode);
+            userMapper.insertUser(user);
             return true;
         } catch (SQLException e) {
             return false;
@@ -35,18 +34,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updatePassword(@NonNull String userId, @NonNull String oldPassword, @NonNull String newPassword) {
+    public String loginCheck(@NonNull User user) {
         try {
-            User user = userMapper.getUserById(userId);
-            if (user != null && passwordEncoder.matches(oldPassword, user.getUserPassword())) {
-                User newUser = new User();
-                newUser.setUserId(userId);
-                newUser.setUserPassword(passwordEncoder.encode(newPassword));
-                userMapper.updateUser(newUser);
-                return true;
-            }
-        } catch (SQLException ignored) {
+            User target = userMapper.getUserByEmail(user.getUserEmail());
+            if (target != null && passwordEncoder.matches(user.getUserPassword(), target.getUserPassword()))
+                return target.getUserId();
+            return null;
+        } catch (SQLException e) {
+            return null;
         }
-        return false;
+    }
+
+    @Override
+    public User getUser(@NonNull String userId) {
+        try {
+            return userMapper.getUserById(userId);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }

@@ -3,10 +3,11 @@ package com.log.blog.controller;
 import com.log.blog.dto.Range;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
-import com.log.blog.service.ArticlePublicService;
-import com.log.blog.service.UserPublicService;
+import com.log.blog.service.ArticleService;
+import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,19 +17,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.http.HttpResponse;
 import java.util.List;
 
 @Controller
 public class ArticlePublicController {
     private static final int LIST_ITEM_NUMBER = 10;
-    private ArticlePublicService articlePublicService;
-    private UserPublicService userPublicService;
+    private ArticleService articleService;
+    private UserService userService;
 
     @Autowired
-    public void init(ArticlePublicService articlePublicService, UserPublicService userPublicService) {
-        this.articlePublicService = articlePublicService;
-        this.userPublicService = userPublicService;
+    public void init(@Qualifier("articleBasicService") ArticleService articleService,
+                     @Qualifier("userBasicService") UserService userService) {
+        this.articleService = articleService;
+        this.userService = userService;
     }
 
     @GetMapping("/")
@@ -38,9 +39,9 @@ public class ArticlePublicController {
             Model model
     ) {
         Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<Article> articles = articlePublicService.getArticles(range);
+        List<Article> articles = articleService.getArticles(range);
         model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("articlesCount", articlePublicService.getArticlesCount());
+        model.addAttribute("articlesCount", articleService.getArticlesCount());
         model.addAttribute("range", range);
         return "article-search.jsp";
     }
@@ -56,10 +57,10 @@ public class ArticlePublicController {
             return "redirect:/";
         } else {
             Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-            List<Article> articles = articlePublicService.search(keyword, range);
+            List<Article> articles = articleService.search(keyword, range);
             model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
             model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
-            model.addAttribute("articlesCount", articlePublicService.searchCount(keyword));
+            model.addAttribute("articlesCount", articleService.searchCount(keyword));
             model.addAttribute("range", range);
             return "article-search.jsp";
         }
@@ -67,11 +68,11 @@ public class ArticlePublicController {
 
     @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
     public String article(@PathVariable String articleId, Model model) {
-        Article article = articlePublicService.getArticle(articleId);
+        Article article = articleService.getArticle(articleId);
         if (article == null)
             return null;
 
-        User user = userPublicService.getUser(article.getAuthorId());
+        User user = userService.getUser(article.getAuthorId());
         model.addAttribute("article", HtmlEscapeUtils.escape(article));
         model.addAttribute("author", HtmlEscapeUtils.escape(user));
         return "article-content.jsp";
@@ -89,7 +90,7 @@ public class ArticlePublicController {
             default -> null;
         });
         String image = name + "." + suffix;
-        if (!articlePublicService.sendImage(image, response.getOutputStream())) {
+        if (!articleService.sendImage(image, response.getOutputStream())) {
             response.setStatus(404);
         }
     }

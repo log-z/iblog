@@ -1,77 +1,49 @@
 package com.log.blog.service.impl;
 
-import com.log.blog.dto.Range;
 import com.log.blog.entity.Admin;
-import com.log.blog.entity.User;
 import com.log.blog.mapper.AdminMapper;
-import com.log.blog.mapper.ArticleMapper;
-import com.log.blog.mapper.UserMapper;
 import com.log.blog.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.lang.NonNull;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
-@Service
+@Service("adminBasicService")
+@DependsOn({"passwordEncoder", "adminMapper"})
 public class AdminServiceImpl implements AdminService {
     private AdminMapper adminMapper;
-    private UserMapper userMapper;
-    private ArticleMapper articleMapper;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public void init(AdminMapper adminMapper, UserMapper userMapper, ArticleMapper articleMapper) {
+    public void init(PasswordEncoder passwordEncoder, AdminMapper adminMapper) {
+        this.passwordEncoder = passwordEncoder;
         this.adminMapper = adminMapper;
-        this.userMapper = userMapper;
-        this.articleMapper = articleMapper;
     }
 
     @Override
-    public Admin getAdmin(@NonNull String adminId) {
+    public boolean register(@NonNull Admin admin) {
         try {
-            return adminMapper.getAdminById(adminId);
+            String encode = passwordEncoder.encode(admin.getAdminPassword());
+            admin.setAdminPassword(encode);
+            adminMapper.insertAdmin(admin);
+            return true;
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public String loginCheck(@NonNull Admin admin) {
+        try {
+            Admin target = adminMapper.getAdminByEmail(admin.getAdminEmail());
+            if (target != null && passwordEncoder.matches(admin.getAdminPassword(), target.getAdminPassword()))
+                return target.getAdminId();
+            return null;
         } catch (SQLException e) {
             return null;
-        }
-    }
-
-    @Override
-    public List<User> getUsers(@NonNull Range range) {
-        try {
-            return userMapper.getAllUsers(range);
-        } catch (SQLException e) {
-            return Collections.emptyList();
-        }
-    }
-
-    @Override
-    public long getUsersCount() {
-        try {
-            return userMapper.getUsersCount();
-        } catch (SQLException e) {
-            return -1;
-        }
-    }
-
-    @Override
-    public boolean deleteUser(@NonNull String userId) {
-        try {
-            userMapper.deleteUser(userId);
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteArticle(@NonNull String articleId) {
-        try {
-            articleMapper.deleteArticle(articleId);
-            return true;
-        } catch (SQLException e) {
-            return false;
         }
     }
 }

@@ -2,8 +2,9 @@ package com.log.blog.controller;
 
 import com.log.blog.dto.AdminRegisterForm;
 import com.log.blog.entity.Admin;
-import com.log.blog.service.AdminPublicService;
+import com.log.blog.service.AdminService;
 import com.log.blog.utils.HtmlEscapeUtils;
+import com.log.blog.validator.PasswordAgainValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -21,12 +22,13 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/admin")
 public class AdminPublicController {
     public final static String SESSION_KEY_ADMIN_IDENTITY = "adminIdentity";
-    private AdminPublicService adminPublicService;
+    private AdminService adminService;
     private Validator passwordAgainValidator;
 
     @Autowired
-    public void init(AdminPublicService adminPublicService, @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
-        this.adminPublicService = adminPublicService;
+    public void init(@Qualifier("adminBasicService") AdminService adminService,
+                     PasswordAgainValidator passwordAgainValidator) {
+        this.adminService = adminService;
         this.passwordAgainValidator = passwordAgainValidator;
     }
 
@@ -38,16 +40,14 @@ public class AdminPublicController {
 
     @PostMapping(value = "/register")
     public String register(
-            @Validated(Admin.register.class) AdminRegisterForm adminRegisterForm,
+            @Validated(Admin.Register.class) AdminRegisterForm adminRegisterForm,
             BindingResult errors,
-            HttpSession session,
             Model model
     ) {
         if (!errors.hasErrors()) {
             passwordAgainValidator.validate(adminRegisterForm, errors);
         }
-        if (!errors.hasErrors() && adminPublicService.register(adminRegisterForm)) {
-            session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminRegisterForm.getAdminId());
+        if (!errors.hasErrors() && adminService.register(adminRegisterForm)) {
             return "redirect:/admin/login";
         } else {
             model.addAttribute("adminRegisterForm", HtmlEscapeUtils.escape(adminRegisterForm));
@@ -63,13 +63,13 @@ public class AdminPublicController {
 
     @PostMapping("/login")
     public String login(
-            @Validated(Admin.login.class) Admin admin,
+            @Validated(Admin.Login.class) Admin admin,
             BindingResult errors,
             HttpSession session,
             Model model
     ) {
         if (!errors.hasErrors()) {
-            String adminId = adminPublicService.loginCheck(admin);
+            String adminId = adminService.loginCheck(admin);
             if (adminId != null) {
                 session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminId);
                 return "redirect:/admin";

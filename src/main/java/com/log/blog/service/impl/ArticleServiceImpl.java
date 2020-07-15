@@ -1,5 +1,6 @@
 package com.log.blog.service.impl;
 
+import com.log.blog.dto.Range;
 import com.log.blog.entity.Article;
 import com.log.blog.mapper.ArticleMapper;
 import com.log.blog.service.ArticleService;
@@ -7,16 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.FileSystemException;
+import java.io.*;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.UUID;
+import java.util.Collections;
+import java.util.List;
 
-@Service
+@Service("articleBasicService")
 public class ArticleServiceImpl implements ArticleService {
     private ArticleMapper articleMapper;
     private String uploadRootPath;
@@ -30,53 +28,79 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public String createId() {
-        return UUID.randomUUID().toString().replace("-", "");
-    }
-
-    @Override
-    public boolean insertArticle(@NonNull String authorId, @NonNull Article article) {
-        article.setArticleId(createId());
-        article.setAuthorId(authorId);
-        article.setCreateTime(new Date());
+    public Article getArticle(@NonNull String articleId) {
         try {
-            articleMapper.insetArticle(article);
-            return true;
+            return articleMapper.getArticle(articleId);
         } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean updateArticle(@NonNull String articleId, @NonNull Article article) {
-        article.setArticleId(articleId);
-        article.setAuthorId(null);
-        article.setCreateTime(null);
-        try {
-            articleMapper.updateArticle(article);
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public String uploadImage(@NonNull MultipartFile image) {
-        String fileName = image.getOriginalFilename();
-        if (image.isEmpty() || fileName == null)
             return null;
+        }
+    }
 
-        String ext = fileName.substring(fileName.lastIndexOf('.'));
-        fileName = createId() + ext;
-        String path = uploadRootPath + imagesDir + fileName;
-        File file = new File(path);
+    @Override
+    public List<Article> getArticles(@NonNull Range range) {
         try {
-            if (!file.exists() && !file.createNewFile())
-                throw new FileSystemException("failed be create image file [" + path + ']');
-            image.transferTo(file);
-            return fileName;
+            return articleMapper.getAllArticles(range);
+        } catch (SQLException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public long getArticlesCount() {
+        try {
+            return articleMapper.getArticlesCount();
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public List<Article> search(@NonNull String keyword, @NonNull Range range) {
+        Article feature = new Article();
+        feature.setTitle(keyword);
+        feature.setContent(keyword);
+        return search(feature, range);
+    }
+
+    @Override
+    public List<Article> search(@NonNull Article feature, @NonNull Range range) {
+        try {
+            return articleMapper.findArticles(feature, range);
+        } catch (SQLException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public long searchCount(@NonNull String keyword) {
+        Article feature = new Article();
+        feature.setTitle(keyword);
+        feature.setContent(keyword);
+        return searchCount(feature);
+    }
+
+    @Override
+    public long searchCount(@NonNull Article feature) {
+        try {
+            return articleMapper.findArticlesCount(feature);
+        } catch (SQLException e) {
+            return -1;
+        }
+    }
+
+    @Override
+    public boolean sendImage(@NonNull String image, @NonNull OutputStream outputStream) {
+        File file = new File(uploadRootPath + imagesDir + image);
+        if (!file.exists())
+            return false;
+        try {
+            FileInputStream inputStream = new FileInputStream(file);
+            inputStream.transferTo(outputStream);
+            inputStream.close();
+            outputStream.flush();
+            return true;
         } catch (IOException e) {
-            return null;
+            return false;
         }
     }
 }

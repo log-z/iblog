@@ -2,6 +2,7 @@ package com.log.blog;
 
 import com.log.blog.config.BlogConfig;
 import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import javax.servlet.Filter;
@@ -26,6 +27,7 @@ public class BlogApplicationInitializer extends AbstractAnnotationConfigDispatch
     protected Filter[] getServletFilters() {
         return new Filter[] {
                 new CharacterEncodingFilter("utf-8"),
+                new FormContentFilter(),
         };
     }
 }
