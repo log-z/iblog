@@ -62,6 +62,11 @@ public class Article {
         this.createTime = createTime;
     }
 
+    public boolean isBlank() {
+        return articleId == null && authorId == null && title == null && content == null &&
+                image == null && createTime == null;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

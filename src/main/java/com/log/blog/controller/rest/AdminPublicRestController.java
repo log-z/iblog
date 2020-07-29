@@ -66,11 +66,17 @@ public class AdminPublicRestController {
         if (!errors.hasErrors()) {
             String adminId = adminService.loginCheck(admin);
             if (adminId != null) {
+                // 登陆成功
                 response.setStatus(201);
                 session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminId);
                 return result.setDateMessage("login.successful", null);
+            } else {
+                // 账号或密码错误
+                response.setStatus(401);
+                return result.setError(null, "login.authorization.failure", null);
             }
         }
+        // 表单格式错误
         response.setStatus(400);
         errors.reject("login.failed");
         return result.setErrors(errors);

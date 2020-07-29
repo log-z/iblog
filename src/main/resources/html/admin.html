@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理员后台</title>
+</head>
+<body>
+    <h1>管理员后台</h1>
+    <header>
+        <admin-header></admin-header>
+    </header>
+
+    <h2>信息</h2>
+    <div id="admin_info">
+        <ul>
+            <li>ID：{{admin.adminId}}</li>
+            <li>姓名：{{admin.adminName}}</li>
+            <li>邮箱：{{admin.adminEmail}}</li>
+        </ul>
+    </div>
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        import AdminHeader from '/static/js/component/admin-header.js'
+
+        let admin_info = new Vue({
+            el: '#admin_info',
+            data: {
+                admin: {
+                    adminId: null,
+                    adminName: null,
+                    adminEmail: null,
+                }
+            },
+            created: function () {
+                const infoApiUrl = '/api/admin'
+                this.$axios.get(infoApiUrl).then(response => {
+                    if (response.status === 200) {
+                        this.admin = response.data.data.admin;
+                    }
+                })
+            }
+        })
+
+        let header = new Vue({
+            el: 'header',
+            components: {
+                'admin-header': AdminHeader,
+            },
+        })
+    </script>
+</body>
+</html>

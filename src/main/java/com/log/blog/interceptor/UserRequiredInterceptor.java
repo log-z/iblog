@@ -58,7 +58,8 @@ public class UserRequiredInterceptor implements HandlerInterceptor {
         if (errorPath == null) {
             throw HttpClientErrorException.create(HttpStatus.UNAUTHORIZED, "", new HttpHeaders(), null, null);
         }
-        request.getRequestDispatcher(errorPath).forward(request, response);
+        request.setAttribute("redirectPath", errorPath);
+        request.getRequestDispatcher("/redirect").forward(request, response);
         return false;
     }
 }

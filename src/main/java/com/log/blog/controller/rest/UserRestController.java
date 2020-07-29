@@ -37,24 +37,22 @@ import static com.log.blog.interceptor.UserRequiredInterceptor.REQUEST_KEY_CURRE
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
+    private static final String DATA_PROPERTY_USER_INFO = "user";
     private static final String DATA_PROPERTY_USER_LIST = "users";
     private static final String DATA_PROPERTY_RANGE = "range";
 
     private UserAdvancedService userAdvancedService;
     private ConversionService restConversionService;
-    private UserPublicRestController userPublicRestController;
     private Validator passwordAgainValidator;
 
     @Autowired
     public void init(
             UserAdvancedService userAdvancedService,
             @Qualifier("restConverterService") ConversionService restConversionService,
-            UserPublicRestController userPublicRestController,
             PasswordAgainValidator passwordAgainValidator
     ) {
         this.userAdvancedService = userAdvancedService;
         this.restConversionService = restConversionService;
-        this.userPublicRestController = userPublicRestController;
         this.passwordAgainValidator = passwordAgainValidator;
     }
 
@@ -70,12 +68,21 @@ public class UserRestController {
             @PathVariable String userId,
             @RequestAttribute(value = REQUEST_KEY_CURRENT_USER, required = false) User user,
             @ModelAttribute RestResult result,
-            HttpServletRequest request,
             HttpServletResponse response
-    ) throws NoHandlerFoundException, IOException {
+    ) throws IOException {
         if (user == null || !userId.equals(user.getUserId()))
             response.sendRedirect("/api/user/" + userId + "$base");
-        return userPublicRestController.info(userId, result, request);
+        return self(user, result);
+    }
+
+    @GetMapping
+    @JsonView(View.Owner.class)
+    public RestResult self(
+            @RequestAttribute(REQUEST_KEY_CURRENT_USER) User user,
+            @ModelAttribute RestResult result
+    ) {
+        RestUser restUser = restConversionService.convert(user, RestUser.class);
+        return result.setDataProperty(DATA_PROPERTY_USER_INFO, restUser);
     }
 
     @DeleteMapping("/{userId:\\d{1,11}}")
@@ -176,5 +183,16 @@ public class UserRestController {
 
         return result.setDataProperty(DATA_PROPERTY_RANGE, restRange)
                 .setDataProperty(DATA_PROPERTY_USER_LIST, restUsers);
+    }
+
+    @GetMapping("/list$admin")
+    @JsonView(View.Admin.class)
+    public RestResult listThemForAdmin(
+            @ModelAttribute RestResult result,
+            @Validated Range range,
+            BindingResult errors,
+            HttpServletResponse response
+    ) {
+        return list(result, range, errors, response);
     }
 }

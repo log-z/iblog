@@ -48,7 +48,8 @@ public class AdminRequiredInterceptor implements HandlerInterceptor {
             }
         }
 
-        request.getRequestDispatcher(errorPath).forward(request, response);
+        request.setAttribute("redirectPath", errorPath);
+        request.getRequestDispatcher("/redirect").forward(request, response);
         return false;
     }
 }

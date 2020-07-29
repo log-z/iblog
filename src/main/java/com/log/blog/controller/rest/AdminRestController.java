@@ -38,6 +38,17 @@ public class AdminRestController {
         session.removeAttribute(AdminPublicController.SESSION_KEY_ADMIN_IDENTITY);
     }
 
+    @GetMapping
+    @JsonView(View.Admin.class)
+    public RestResult self(
+            @SessionAttribute(AdminPublicController.SESSION_KEY_ADMIN_IDENTITY) String adminId,
+            @ModelAttribute RestResult result
+    ) {
+        Admin admin = adminAdvancedService.getAdmin(adminId);
+        RestAdmin restAdmin = restConverterService.convert(admin, RestAdmin.class);
+        return result.setDataProperty(DATA_PROPERTY_ADMIN_INFO, restAdmin);
+    }
+
     @GetMapping("/{adminId:\\d{0,11}}")
     @JsonView(View.Admin.class)
     public RestResult info(

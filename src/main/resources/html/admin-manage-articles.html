@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理员后台 - 管理文章</title>
+</head>
+<body>
+    <h1>管理员后台 - 管理文章</h1>
+    <header>
+        <admin-header></admin-header>
+    </header>
+
+    <div id="article_list">
+        <router-view></router-view>
+    </div>
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-router.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        import AdminHeader from '/static/js/component/admin-header.js'
+        import ArticleList from '/static/js/component/article-list.js'
+        import MultipageRouteMixin from '/static/js/mixin/multipage-route-mixin.js'
+
+        const ArticleListWrapper = {
+            mixins: [ MultipageRouteMixin ],
+            data: function () {
+                return {
+                    fields: [ 'id', 'title', 'createTime', 'options' ],
+                    supportOptions: ['view', 'delete'],
+                    defaultRange: {
+                        num: 20,
+                        offset: 0,
+                    },
+                }
+            },
+            components: {
+                'article-list': ArticleList
+            },
+            template: `
+                <article-list ref="articleList" v-bind:fields="fields" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-on:range-update="rangeUpdate">
+                </article-list>
+            `,
+            computed: {
+                page: function () {
+                    return this.$refs.articleList;
+                }
+            }
+        }
+
+        let router = new VueRouter({
+            routes: [
+                { path: '/', component: ArticleListWrapper },
+            ]
+        });
+
+        let article_list = new Vue({
+            router
+        }).$mount('#article_list')
+
+        let header = new Vue({
+            el: 'header',
+            components: {
+                'admin-header': AdminHeader,
+            },
+        })
+    </script>
+</body>
+</html>

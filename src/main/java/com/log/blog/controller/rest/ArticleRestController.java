@@ -117,6 +117,7 @@ public class ArticleRestController {
 
     @PostMapping("/upload-image")
     @JsonView(View.Base.class)
+    @ResponseStatus(HttpStatus.CREATED)
     public RestResult uploadImage(MultipartFile image, @ModelAttribute RestResult result) {
         String imageName = articleAdvancedService.uploadImage(image);
         if (imageName == null)

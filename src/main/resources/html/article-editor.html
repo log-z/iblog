@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>编辑</title>
+</head>
+<body>
+    <div id="article_editor">
+        <router-view></router-view>
+    </div>
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-router.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script type="module">
+        import FormMixin from '/static/js/mixin/form-mixin.js'
+
+        const ArticleEditor = {
+            data: function() {
+                return {
+                    baseArticleApiUrl: '/api/article',
+                    baseAuthorApiUrl: '/api/user',
+                    uploadImageApiUrl: '/api/article/upload-image',
+                    message: null,
+                    article: {
+                        articleId: null,
+                        authorId: null,
+                        title: null,
+                        content: null,
+                        createTime: null,
+                        imageUrl: null,
+                        imageName: null,
+                    },
+                    author: {
+                        userId: null,
+                        userName: null,
+                    },
+                    errors: {
+                        title: null,
+                        content: null,
+                        image: null,
+                        imageName: null,
+                    }
+                }
+            },
+            computed: {
+                authorHomeUrl: function () {
+                    return 'user.html#/' + this.author.userId;
+                },
+                articleApiUrl: function () {
+                    return this.baseArticleApiUrl + '/' + this.$route.params.articleId;
+                },
+                authorApiUrl: function () {
+                    return this.baseAuthorApiUrl + '/' + this.article.authorId;
+                },
+                saveArticleApiUrl: function () {
+                    if (this.article.articleId) {
+                        return this.baseArticleApiUrl + '/' + this.article.articleId
+                    } else {
+                        return this.baseArticleApiUrl
+                    }
+                },
+                isNewArticle: function () {
+                    return typeof this.$route.params.articleId === 'undefined'
+                }
+            },
+            mixins: [ FormMixin ],
+            template: `
+                <form v-on:submit.prevent="submit">
+                    标题：<br>
+                    <input v-model:value="article.title" type="text" maxlength="40"><br>
+                    <span class="error">{{errors.title}}</span><br>
+                    <div v-if="author.userId">
+                        <a v-bind:href="authorHomeUrl">{{author.userName}}</a>
+                        | {{article.createTime}}
+                        <br><br>
+                    </div>
+                    正文：<br>
+                    <textarea rows="20" maxlength="1000" v-model="article.content"></textarea><br>
+                    <span class="error">{{errors.content}}</span><br>
+                    <div>
+                        图片：<br>
+                        <img v-if="article.imageUrl" v-bind:src="article.imageUrl" v-bind:alt="article.title">
+                        <div v-else>
+                            <input ref="imageInput" type="file" v-on:change="uploadImage">
+                            <span class="error">{{errors.image}}</span>
+                        </div>
+                        <span class="error">{{errors.imageName}}</span>
+                    </div>
+                    <br>
+                    <input type="submit" value="保存文章">
+                    <p>{{message}}</p>
+                </form>
+            `,
+            methods: {
+                reloadArticle: function () {
+                    if (this.isNewArticle) return;
+                    this.$axios.get(this.articleApiUrl).then(response => {
+                        if (response.status === 200) {
+                            this.article = response.data.data.article;
+                            document.title = '编辑 - ' + this.article.title;
+                        }
+                        this.reloadAuthor();
+                    }).catch(error => {
+                        this.message = error.response.data.errors.message;
+                    })
+                },
+                reloadAuthor: function() {
+                    this.$axios.get(this.authorApiUrl).then(response => {
+                        if (response.status === 200)
+                            this.author = response.data.data.user;
+                    })
+                },
+                submit: function () {
+                    let params = this.$qs.stringify({
+                        title: this.article.title,
+                        content: this.article.content,
+                        imageName: this.article.imageName,
+                    }, {
+                        skipNulls: true,
+                    })
+
+                    this.clearMessages();
+                    let call = (this.isNewArticle ? this.$axios.post : this.$axios.put);
+                    call(this.saveArticleApiUrl, params).then(response => {
+                        if (response.status === 201 || response.status === 204) {
+                            this.message = '文章已保存 - ' + Date();
+                        } else {
+                            this.formDefaultHandle(response)
+                        }
+                    }).catch(this.formErrorHandle)
+                },
+                uploadImage: function () {
+                    let file = this.$refs.imageInput.files[0]
+                    if (file instanceof File) {
+                        let params = new FormData();
+                        params.append('image', file);
+
+                        this.$axios.post(this.uploadImageApiUrl, params, {
+                            headers:{ 'Content-Type':'multipart/form-data' }
+                        }).then(response => {
+                            if (response.status === 201) {
+                                this.article.imageName = response.data.data.imageName;
+                                this.article.imageUrl = '/article/image/' + this.article.imageName;
+                            } else {
+                                this.errors.image = response.data.errors.message;
+                            }
+                        }).catch(error => {
+                            this.errors.image = error.response.data.errors.message;
+                        })
+                    }
+                },
+            },
+            beforeRouteEnter: function(to, form, next) {
+                next(vm => vm.reloadArticle());
+            },
+            beforeRouteUpdate: function(to, form, next) {
+                next(this.reloadArticle());
+            },
+        }
+
+        let router = new VueRouter({
+            routes: [
+                { path: '/:articleId', component: ArticleEditor },
+                { path: '/', component: ArticleEditor },
+            ]
+        });
+
+        let article_editor = new Vue({
+            router
+        }).$mount('#article_editor')
+    </script>
+    <script src="/static/js/crypto-js.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

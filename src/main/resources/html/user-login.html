@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>用户登陆</title>
+</head>
+<body>
+    <h1>用户登陆</h1>
+
+    <div id="login_form">
+        <user-login-form></user-login-form>
+    </div>
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/crypto-js.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        import FormMixin from '/static/js/mixin/form-mixin.js'
+
+        Vue.component('user-login-form', {
+            data: function() {
+                return {
+                    apiUrl: '/api/user/session',
+                    jumpUrl: 'user.html',
+                    message: null,
+                    fields: {
+                        userEmail: null,
+                        userPassword: null,
+                    },
+                    errors: {
+                        userEmail: null,
+                        userPassword: null,
+                    }
+                }
+            },
+            mixins: [ FormMixin ],
+            template: `
+                <form v-on:submit.prevent="submit">
+                    <p>{{message}}</p>
+                    <label>邮箱: <input name="userEmail" v-model="fields.userEmail" type="email" maxlength="320" required></label>
+                    <span class="error">{{errors.userEmail}}</span>
+                    <br>
+                    <label>密码: <input name="userPassword" v-model="fields.userPassword" type="password" minlength="8" required></label>
+                    <span class="error">{{errors.userPassword}}</span>
+                    <br>
+                    <input type="submit" value="登陆">
+                    <a href="user-register.html">[注册]</a>
+                </form>
+            `,
+            methods: {
+                submit: function () {
+                    let prams = this.$qs.stringify({
+                        userEmail: this.fields.userEmail,
+                        userPassword: CryptoJS.SHA256(this.fields.userPassword).toString(),
+                    });
+
+                    this.clearMessages();
+                    this.$axios.post(this.apiUrl, prams).then(response => {
+                        if (response.status === 201) {
+                            window.location.href = this.jumpUrl;
+                        } else {
+                            this.formDefaultHandle(response);
+                        }
+                    }).catch(this.formErrorHandle)
+                },
+            }
+        })
+
+        let login_form = new Vue({
+            el: '#login_form',
+        })
+    </script>
+</body>
+</html>

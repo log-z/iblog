@@ -60,6 +60,7 @@ public class ArticlePublicRestController {
             @Validated Range range,
             BindingResult errors,
             @RequestParam(required = false) String keyword,
+            Article feature,
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
@@ -70,12 +71,15 @@ public class ArticlePublicRestController {
 
         long count;
         List<Article> articles;
-        if (keyword == null) {
-            count = articleService.getArticlesCount();
-            articles = articleService.getArticles(range);
-        } else {
+        if (!feature.isBlank()) {
+            count = articleService.searchCount(feature);
+            articles = articleService.search(feature, range);
+        } else if (keyword != null) {
             count = articleService.searchCount(keyword);
             articles = articleService.search(keyword, range);
+        } else {
+            count = articleService.getArticlesCount();
+            articles = articleService.getArticles(range);
         }
 
         RestRange restRange = restConversionService.convert(range, RestRange.class);

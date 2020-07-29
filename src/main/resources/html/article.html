@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>文章</title>
+</head>
+<body>
+    <div id="article_info">
+        <router-view></router-view>
+    </div>
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-router.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/crypto-js.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        const ArticleView = {
+            data: function() {
+                return {
+                    baseArticleApiUrl: '/api/article/',
+                    baseAuthorApiUrl: '/api/user/',
+                    article: {
+                    articleId: null,
+                        authorId: null,
+                        title: null,
+                        content: null,
+                        createTime: null,
+                        imageUrl: null,
+                },
+                    author: {
+                        userId: null,
+                            userName: null,
+                    },
+                }
+            },
+            computed: {
+                authorHomeUrl: function () {
+                    return 'user.html#/' + this.author.userId;
+                },
+                articleApiUrl: function () {
+                    return this.baseArticleApiUrl + this.$route.params.articleId;
+                },
+                authorApiUrl: function () {
+                    return this.baseAuthorApiUrl + this.article.authorId;
+                },
+            },
+            template: `
+                <div>
+                    <h1>{{article.title}}</h1>
+                    <div v-if="article.articleId">
+                        <div><a v-bind:href="authorHomeUrl">{{author.userName}}</a> | {{article.createTime}}</div>
+                        <p>{{article.content}}</p>
+                        <img v-if="article.imageUrl" v-bind:src="article.imageUrl" v-bind:alt="article.title">
+                    </div>
+                </div>
+            `,
+            methods: {
+                reloadArticle: function () {
+                    this.$axios.get(this.articleApiUrl).then(response => {
+                        if (response.status === 200) {
+                            this.article = response.data.data.article;
+                            document.title = '文章 - ' + this.article.title;
+                        }
+                        this.reloadAuthor();
+                    }).catch(error => {
+                        this.article.title = error.response.data.errors.message;
+                    })
+                },
+                reloadAuthor: function() {
+                    this.$axios.get(this.authorApiUrl).then(response => {
+                        if (response.status === 200)
+                            this.author = response.data.data.user;
+                    })
+                },
+            },
+            beforeRouteEnter: function(to, form, next) {
+                next(vm => vm.reloadArticle());
+            },
+            beforeRouteUpdate: function(to, form, next) {
+                this.reloadArticle();
+                next();
+            },
+        }
+
+        let router = new VueRouter({
+            routes: [
+                { path: '/:articleId', component: ArticleView },
+            ]
+        });
+
+        let article_info = new Vue({
+            router
+        }).$mount('#article_info')
+    </script>
+</body>
+</html>

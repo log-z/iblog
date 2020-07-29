@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>iBlog</title>
+</head>
+<body>
+    <div id="home">
+        <h1>iBlog</h1>
+        <user-header v-bind:user="currentUser"></user-header>
+
+        <div id="article_list">
+            <form v-on:submit.prevent="search">
+                <input type="submit" value="搜索">
+                <input type="text" v-model="keyword">
+            </form>
+            <router-view></router-view>
+        </div>
+    </div>
+
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-router.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        import UserHeader from '/static/js/component/user-header.js'
+        import ArticleList from '/static/js/component/article-list.js'
+        import ArticleListRouteMixin from '/static/js/mixin/article-list-route-mixin.js'
+
+        const ArticleListWrapper = {
+            mixins: [ ArticleListRouteMixin ],
+            data: function () {
+                return {
+                    fields: [ 'title', 'createTime', 'options' ],
+                    supportOptions: [ 'view' ],
+                    defaultRange: {
+                        num: 10,
+                        offset: 0,
+                    },
+                }
+            },
+            components: {
+                'article-list': ArticleList
+            },
+            template: `
+                <article-list ref="articleList" v-bind:fields="fields" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-on:range-update="rangeUpdate">
+                </article-list>
+            `,
+            computed: {
+                page: function () {
+                    return this.$refs.articleList;
+                }
+            },
+        }
+
+        let router = new VueRouter({
+            routes: [
+                { path: '/', component: ArticleListWrapper },
+            ],
+        });
+
+        let home = new Vue({
+            router,
+            data: {
+                baseApiUrl: '/api/user',
+                currentUser: {
+                    userId: null,
+                    userName: null,
+                    userEmail: null,
+                },
+                targetUser: {
+                    userId: null,
+                    userName: null,
+                    userEmail: null,
+                },
+                keyword: null,
+            },
+            computed: {
+                isMyInfo: function () {
+                    let cid = this.currentUser.userId;
+                    let tid = this.targetUser.userId;
+                    return cid && tid && cid === tid;
+                }
+            },
+            components: {
+                'user-header': UserHeader,
+            },
+            methods: {
+                reloadCurrentUserInfo: function () {
+                    this.$axios.get(this.baseApiUrl).then(response => {
+                        if (response.status === 200) {
+                            this.currentUser = response.data.data.user;
+                        }
+                    }).catch(error => { });
+                },
+                search: function () {
+                    let query = { }
+                    if (this.keyword) query.keyword = this.keyword;
+
+                    this.$router.push({
+                        path: this.$route.path,
+                        query: query,
+                    })
+                }
+            },
+            created: function () {
+                this.reloadCurrentUserInfo();
+            }
+        }).$mount('#home')
+    </script>
+</body>
+</html>

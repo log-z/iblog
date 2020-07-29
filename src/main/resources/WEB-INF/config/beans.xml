@@ -10,7 +10,11 @@
             http://www.springframework.org/schema/aop
             https://www.springframework.org/schema/aop/spring-aop.xsd">
     <mvc:annotation-driven validator="globalValidator" />
+
+    <!--  Resources Mapping  -->
     <mvc:resources mapping="/static/**" location="static/" />
+    <mvc:resources mapping="/m/*.html" location="html/" />
+
     <mvc:interceptors>
         <!--  JSP View interceptors  -->
         <!-- userRequiredInterceptor -->
@@ -59,6 +63,7 @@
         <!--  Restful API interceptors  -->
         <!-- restUserRequiredInterceptor -->
         <mvc:interceptor>
+            <mvc:mapping path="/api/user"/>
             <mvc:mapping path="/api/user/**"/>
             <mvc:mapping path="/api/article"/>
             <mvc:mapping path="/api/article/**"/>
@@ -67,12 +72,24 @@
                 <property name="errorPath" value="/api/user/error401" />
                 <property name="advancedExcludeMapping">
                     <set>
+                        <value>/api/user                               -> POST</value>
                         <value>/api/user/session                       -> POST</value>
                         <value>/api/user/{userId:\d{1,11}}             -> GET, DELETE</value>  <!-- DELETE由管理员拦截 -->
                         <value>/api/user/{userId:\d{1,11}}$base        -> GET</value>
-                        <value>/api/user/list                          -> GET</value>  <!-- GET由管理员拦截 -->
+                        <value>/api/user/list*                         -> GET</value>  <!-- GET由管理员拦截 -->
                         <value>/api/article/{articleId:[A-Za-z\d]{32}} -> GET, DELETE</value>  <!-- DELETE由管理员拦截 -->
                         <value>/api/article/list                       -> GET</value>
+                    </set>
+                </property>
+            </bean>
+        </mvc:interceptor>
+        <!-- restUserOptionalInterceptor -->
+        <mvc:interceptor>
+            <mvc:mapping path="/api/user/{userId:\d{1,11}}"/>
+            <bean class="com.log.blog.interceptor.UserOptionalInterceptor">
+                <property name="advancedMapping">
+                    <set>
+                        <value>/api/user/{userId:\d{1,11}} -> GET</value>
                     </set>
                 </property>
             </bean>
@@ -82,7 +99,7 @@
             <mvc:mapping path="/api/admin"/>
             <mvc:mapping path="/api/admin/**"/>
             <mvc:mapping path="/api/user/{userId:\d{1,11}}"/>
-            <mvc:mapping path="/api/user/list"/>
+            <mvc:mapping path="/api/user/list*"/>
             <mvc:mapping path="/api/article/{articleId:[A-Za-z\d]{32}}"/>
             <mvc:exclude-mapping path="/api/admin/error*"/>
             <bean class="com.log.blog.interceptor.AdminRequiredInterceptor">
@@ -92,9 +109,32 @@
                         <value>/api/admin                  -> POST</value>
                         <value>/api/admin/session          -> POST</value>
                         <value>/api/user/{userId:\d{1,11}} -> GET</value>  <!-- GET由用户拦截 -->
-                        <value>/api/article/{articleId:[A-Za-z\d]{32}} -> GET</value>
+                        <value>/api/article/{articleId:[A-Za-z\d]{32}} -> GET, POST, PUT</value>
                     </set>
                 </property>
+            </bean>
+        </mvc:interceptor>
+
+        <!--  HTML interceptors  -->
+        <!-- userRequiredInterceptor -->
+        <mvc:interceptor>
+            <mvc:mapping path="/m/user*.html"/>
+            <mvc:mapping path="/m/article*.html"/>
+            <mvc:exclude-mapping path="/m/user.html"/>
+            <mvc:exclude-mapping path="/m/user-login.html"/>
+            <mvc:exclude-mapping path="/m/user-register.html"/>
+            <mvc:exclude-mapping path="/m/article.html"/>
+            <bean class="com.log.blog.interceptor.UserRequiredInterceptor">
+                <property name="errorPath" value="/m/user-login.html" />
+            </bean>
+        </mvc:interceptor>
+        <!-- restAdminRequiredInterceptor -->
+        <mvc:interceptor>
+            <mvc:mapping path="/m/admin*.html"/>
+            <mvc:exclude-mapping path="/m/admin-login.html"/>
+            <mvc:exclude-mapping path="/m/admin-register.html"/>
+            <bean class="com.log.blog.interceptor.AdminRequiredInterceptor">
+                <property name="errorPath" value="/m/admin-login.html" />
             </bean>
         </mvc:interceptor>
     </mvc:interceptors>

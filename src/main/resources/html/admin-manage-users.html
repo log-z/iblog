@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>管理员后台 - 管理用户</title>
+</head>
+<body>
+    <h1>管理员后台 - 管理用户</h1>
+    <header>
+        <admin-header></admin-header>
+    </header>
+
+    <div id="user_list">
+        <router-view></router-view>
+    </div>
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-router.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        import AdminHeader from '/static/js/component/admin-header.js'
+        import UserList from '/static/js/component/user-list.js'
+        import MultipageRouteMixin from '/static/js/mixin/multipage-route-mixin.js'
+
+        const UserListWrapper = {
+            mixins: [ MultipageRouteMixin ],
+            data: function () {
+                return {
+                    listApiUrl: '/api/user/list$admin',
+                    supportOptions: ['view', 'delete'],
+                    defaultRange: {
+                        num: 20,
+                        offset: 0,
+                    },
+                }
+            },
+            components: {
+                'user-list': UserList
+            },
+            template: `
+                <user-list ref="userList" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-bind:list-api="listApiUrl" v-on:range-update="rangeUpdate">
+                </user-list>
+            `,
+            computed: {
+                page: function () {
+                    return this.$refs.userList;
+                }
+            }
+        }
+
+        let router = new VueRouter({
+            routes: [
+                { path: '/', component: UserListWrapper },
+            ]
+        });
+
+        let user_list = new Vue({
+            router
+        }).$mount('#user_list')
+
+        let header = new Vue({
+            el: 'header',
+            components: {
+                'admin-header': AdminHeader,
+            },
+        })
+    </script>
+</body>
+</html>

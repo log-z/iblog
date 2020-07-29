@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息</title>
+</head>
+<body>
+<div id="user_info">
+    <h1>用户信息 - {{targetUser.userName}}</h1>
+    <user-header v-bind:user="currentUser"></user-header>
+
+    <router-view v-bind:user="targetUser" v-bind:is-me="isMe" v-on:target-user-change="reloadTargetUserInfo"></router-view>
+</div>
+
+
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/vue-router.js"></script>
+<script src="/static/js/axios.js"></script>
+<script src="/static/js/qs.js"></script>
+<script src="/static/js/crypto-js.js"></script>
+<script src="/static/js/main.js"></script>
+<script type="module">
+    import UserHeader from '/static/js/component/user-header.js'
+    import UserInfo from '/static/js/component/user-info.js'
+    import UserRootMixin from '/static/js/mixin/user-root-mixin.js'
+    import FormMixin from '/static/js/mixin/form-mixin.js'
+
+    const UserUpdateName = ({
+        props: [ 'user' ],
+        data: function () {
+            return {
+                message: null,
+                input: {
+                    name: this.user.userName,
+                },
+                errors: {
+                    name: null,
+                }
+            }
+        },
+        mixins: [ FormMixin ],
+        template: `
+            <form v-on:submit.prevent="submit">
+                姓名：
+                <input type="text" v-model="input.name" maxlength="20" required>
+                <input type="submit" value="更改">
+                <span>{{errors.name}}</span>
+                <p>{{message}}</p>
+            </form>
+        `,
+        computed: {
+            apiUrl: function () {
+                let userId = this.user.userId;
+                return (typeof userId !== 'undefined' ? `/api/user/${userId}/name` : null);
+            }
+        },
+        methods: {
+            submit: function () {
+                let params = this.$qs.stringify(this.input, {
+                    skipNulls: true,
+                })
+
+                this.clearMessages();
+                this.$axios.put(this.apiUrl, params).then(response => {
+                    if (response.status === 204) {
+                        this.message = '更改姓名成功'
+                    } else {
+                        this.formDefaultHandle(response);
+                    }
+                }).catch(this.formErrorHandle);
+            }
+        }
+    })
+
+    const UserUpdatePassword = ({
+        props: [ 'user' ],
+        data: function () {
+            return {
+                message: null,
+                input: {
+                    oldPassword: null,
+                    newPassword: null,
+                    newPasswordAgain: null,
+                },
+                errors: {
+                    oldPassword: null,
+                    newPassword: null,
+                    newPasswordAgain: null,
+                }
+            }
+        },
+        mixins: [ FormMixin ],
+        template: `
+            <form v-on:submit.prevent="submit">
+                旧密码：<input v-model="input.oldPassword" type="password" minlength="8" required>
+                <span>{{errors.oldPassword}}</span>
+                <br>
+                新密码：<input v-model="input.newPassword" type="password" minlength="8" required>
+                <span>{{errors.newPassword}}</span>
+                <br>
+                再次输入新密码：<input v-model="input.newPasswordAgain" type="password" minlength="8" required>
+                <span>{{errors.newPasswordAgain}}</span>
+                <br>
+                <input type="submit" value="更改">
+                <p>{{message}}</p>
+            </form>
+        `,
+        computed: {
+            apiUrl: function () {
+                let userId = this.user.userId;
+                return (typeof userId !== 'undefined' ? `/api/user/${userId}/password` : null);
+            }
+        },
+        methods: {
+            submit: function () {
+                let params = this.$qs.stringify({
+                    oldPassword: CryptoJS.SHA256(this.input.oldPassword).toString(),
+                    newPassword: CryptoJS.SHA256(this.input.newPassword).toString(),
+                    newPasswordAgain: CryptoJS.SHA256(this.input.newPasswordAgain).toString(),
+                }, {
+                    skipNulls: true,
+                })
+
+                this.clearMessages();
+                this.$axios.put(this.apiUrl, params).then(response => {
+                    if (response.status === 204) {
+                        this.message = '更改密码成功'
+                    } else {
+                        this.formDefaultHandle(response);
+                    }
+                }).catch(this.formErrorHandle);
+            }
+        }
+    })
+
+    const UserInfoWrapper = ({
+        props: [ 'user', 'isMe' ],
+        components: {
+            'user-info': UserInfo,
+            'user-update-name': UserUpdateName,
+            'user-update-password': UserUpdatePassword,
+        },
+        template: `
+                <div>
+                    <h2>基本信息</h2>
+                    <user-info v-bind:user="user"></user-info>
+                    <div v-if="isMe">
+                        <h2>更改姓名</h2>
+                        <user-update-name v-bind:user="user"></user-update-name>
+                        <h2>更改密码</h2>
+                        <user-update-password v-bind:user="user"></user-update-password>
+                    </div>
+                </div>
+        `,
+        methods: {
+            routeUpdate: function (to, form) {
+                this.$emit('target-user-change', to.params.userId)
+            },
+        },
+        beforeRouteEnter: function (to, form, next) {
+            next(vm => vm.routeUpdate(to, form))
+        },
+        beforeRouteUpdate: function(to, form, next) {
+            next(this.routeUpdate(to, form));
+        }
+    })
+
+    let router = new VueRouter({
+        routes: [
+            { path: '/:userId', component: UserInfoWrapper },
+            { path: '/', component: UserInfoWrapper },
+            { path: '*', redirect: '/' },
+        ],
+    });
+
+    let home = new Vue({
+        router,
+        mixins: [ UserRootMixin ],
+        watch: {
+            targetUser: function () {
+                document.title = '用户信息 - ' + this.targetUser.userName;
+            }
+        },
+        components: {
+            'user-header': UserHeader,
+        },
+    }).$mount('#user_info')
+</script>
+</body>
+</html>

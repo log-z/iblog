@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>用户主页</title>
+</head>
+<body>
+    <div id="user_home">
+        <h1>用户主页 - {{targetUser.userName}}</h1>
+        <user-header v-bind:user="currentUser"></user-header>
+
+        <router-view v-bind:is-me="isMe" v-on:author-update="reloadTargetUserInfo"></router-view>
+    </div>
+
+
+    <script src="/static/js/vue.js"></script>
+    <script src="/static/js/vue-router.js"></script>
+    <script src="/static/js/axios.js"></script>
+    <script src="/static/js/qs.js"></script>
+    <script src="/static/js/main.js"></script>
+    <script type="module">
+        import ArticleList from '/static/js/component/article-list.js'
+        import UserArticleListRouteMixin from '/static/js/mixin/user-article-list-route-mixin.js'
+        import UserRootMixin from  '/static/js/mixin/user-root-mixin.js'
+
+        const UserArticleListWrapper = {
+            mixins: [ UserArticleListRouteMixin ],
+            props: [ 'isMe' ],
+            data: function () {
+                return {
+                    fields: [ 'title', 'createTime', 'options' ],
+                    supportOptions: [ 'view' ],
+                    defaultRange: {
+                        num: 10,
+                        offset: 0,
+                    },
+                }
+            },
+            components: {
+                'article-list': ArticleList
+            },
+            template: `
+                <article-list ref="articleList" v-bind:fields="fields" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-on:range-update="rangeUpdate">
+                </article-list>
+            `,
+            computed: {
+                page: function () {
+                    return this.$refs.articleList;
+                }
+            },
+            watch: {
+                isMe: function (value) {
+                    if (value) {
+                        this.supportOptions = [ 'view', 'edit' ]
+                    } else {
+                        this.supportOptions = [ 'view' ]
+                    }
+                }
+            }
+        }
+
+        let router = new VueRouter({
+            routes: [
+                { path: '/:userId', component: UserArticleListWrapper },
+                { path: '/', component: UserArticleListWrapper },
+                { path: '*', redirect: '/' },
+            ],
+        });
+
+        let user_home = new Vue({
+            router,
+            mixins: [ UserRootMixin ],
+            watch: {
+                targetUser: function () {
+                    document.title = '用户主页 - ' + this.targetUser.userName;
+                }
+            }
+        }).$mount('#user_home')
+
+    </script>
+</body>
+</html>
