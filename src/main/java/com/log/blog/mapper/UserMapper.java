@@ -2,11 +2,13 @@ package com.log.blog.mapper;
 
 import com.log.blog.dto.Range;
 import com.log.blog.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Mapper
 public interface UserMapper {
     User getUserById(@Param("id") String id) throws SQLException;
 

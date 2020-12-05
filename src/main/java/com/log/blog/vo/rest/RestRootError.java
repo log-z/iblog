@@ -1,13 +1,18 @@
 package com.log.blog.vo.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Component
+@Scope("prototype")
 public class RestRootError extends RestError {
     @JsonView(View.Base.class)
-    private List<RestError> details;
+    private List<RestError> details = new ArrayList<>();
 
     public List<RestError> getDetails() {
         return details;

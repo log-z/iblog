@@ -2,12 +2,14 @@ package com.log.blog.mapper;
 
 import com.log.blog.dto.Range;
 import com.log.blog.entity.Article;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.lang.NonNull;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Mapper
 public interface ArticleMapper {
     Article getArticle(@Param("id") @NonNull String id) throws SQLException;
 

@@ -3,12 +3,14 @@ package com.log.blog.validator;
 import com.log.blog.dto.AdminRegisterForm;
 import com.log.blog.dto.PasswordForm;
 import com.log.blog.dto.UserRegisterForm;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.util.List;
 import java.util.Objects;
 
+@Component
 public class PasswordAgainValidator implements Validator {
     private static final String ERROR_CODE = "passwordAgain.inconsistent";
     private static final List<Class<?>> SUPPORT_CLASS = List.of(

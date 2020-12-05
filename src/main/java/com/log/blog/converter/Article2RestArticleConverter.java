@@ -2,11 +2,14 @@ package com.log.blog.converter;
 
 import com.log.blog.entity.Article;
 import com.log.blog.vo.rest.RestArticle;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Article2RestArticleConverter implements Converter<Article, RestArticle> {
     private String contextPath;
-    public void setContextPath(String contextPath) {
+    public void setContextPath(@Value("#{servletContext.contextPath}") String contextPath) {
         this.contextPath = contextPath;
     }
 

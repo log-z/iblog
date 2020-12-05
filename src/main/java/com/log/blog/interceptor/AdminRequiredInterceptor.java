@@ -6,6 +6,7 @@ import com.log.blog.service.AdminAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
+@Scope("prototype")
 public class AdminRequiredInterceptor implements HandlerInterceptor {
     private AdminAdvancedService adminAdvancedService;
     private String errorPath ;

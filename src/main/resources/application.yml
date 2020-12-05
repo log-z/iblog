@@ -1,0 +1,11 @@
+spring:
+  messages:
+    cache-duration: 120
+  datasource:
+    name: mysql
+    url: jdbc:mysql://localhost:3306/blog?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: root
+mybatis:
+  mapper-locations: /mappers/*-mapper.xml

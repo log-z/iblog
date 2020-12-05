@@ -2,7 +2,11 @@ package com.log.blog.vo.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -11,6 +15,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+@Component
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RestResult {
     private static final String DATA_PROPERTY_MESSAGE = "message";
     private static final String RENDER_MESSAGE_PREFIX = "{";
@@ -35,6 +41,7 @@ public class RestResult {
         return errors;
     }
 
+    @Autowired
     public void setErrors(RestRootError errors) {
         this.errors = errors;
     }
@@ -45,6 +52,7 @@ public class RestResult {
         return data;
     }
 
+    @Autowired
     public void setData(RestData data) {
         this.data = data;
     }
@@ -63,6 +71,7 @@ public class RestResult {
         return this;
     }
 
+    @Autowired
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
     }

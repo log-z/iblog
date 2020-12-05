@@ -37,46 +37,25 @@
             <version>8.0.20</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>5.2.7.RELEASE</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.4.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-core -->
+        <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-crypto -->
         <dependency>
             <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>5.3.3.RELEASE</version>
+            <artifactId>spring-security-crypto</artifactId>
+            <version>5.4.2</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
+        <!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>5.2.7.RELEASE</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis</artifactId>
-            <version>3.5.5</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
-        <dependency>
-            <groupId>org.mybatis</groupId>
-            <artifactId>mybatis-spring</artifactId>
-            <version>2.0.5</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.4</version>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.1.4</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->

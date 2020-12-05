@@ -8,6 +8,7 @@ import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Controller
+@Scope("prototype")
 public class ArticlePublicController {
     private static final int LIST_ITEM_NUMBER = 10;
     private ArticleService articleService;

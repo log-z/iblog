@@ -3,7 +3,9 @@ package com.log.blog.converter;
 import com.log.blog.dto.ArticleForm;
 import com.log.blog.entity.Article;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ArticleForm2ArticleConverter implements Converter<ArticleForm, Article> {
     @Override
     public Article convert(ArticleForm source) {

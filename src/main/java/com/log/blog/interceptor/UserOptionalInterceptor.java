@@ -7,6 +7,7 @@ import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.utils.MappingUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
+@Scope("prototype")
 public class UserOptionalInterceptor implements HandlerInterceptor {
     private UserService userService;
     private Map<String, Set<String>> advancedMapping = Collections.emptyMap();
