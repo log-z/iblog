@@ -8,9 +8,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class Article2RestArticleConverter implements Converter<Article, RestArticle> {
-    private String contextPath;
+    private String contextPath = "";
+
     public void setContextPath(@Value("#{servletContext.contextPath}") String contextPath) {
-        this.contextPath = contextPath;
+        this.contextPath = contextPath == null ? "" : contextPath;
     }
 
     @Override

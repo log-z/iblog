@@ -86,11 +86,13 @@ public class ArticlePublicController {
             @PathVariable String suffix,
             HttpServletResponse response
     ) throws IOException {
-        response.setHeader("Content-Type", switch (suffix) {
+        String contentType = switch (suffix) {
             case "jpg" -> MediaType.IMAGE_JPEG_VALUE;
             case "png" -> MediaType.IMAGE_PNG_VALUE;
             default -> null;
-        });
+        };
+        response.setHeader("Content-Type", contentType);
+
         String image = name + "." + suffix;
         if (!articleService.sendImage(image, response.getOutputStream())) {
             response.setStatus(404);

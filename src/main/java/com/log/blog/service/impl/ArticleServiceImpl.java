@@ -5,7 +5,7 @@ import com.log.blog.entity.Article;
 import com.log.blog.mapper.ArticleMapper;
 import com.log.blog.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +21,12 @@ public class ArticleServiceImpl implements ArticleService {
     private String imagesDir;
 
     @Autowired
-    public void init(ArticleMapper articleMapper, Environment environment) {
+    public void init(ArticleMapper articleMapper,
+                     @Value("${upload.rootPath}") String uploadRootPath,
+                     @Value("${upload.article.images}") String imagesDir) {
         this.articleMapper = articleMapper;
-        this.uploadRootPath = environment.getProperty("upload.rootPath");
-        this.imagesDir = environment.getProperty("upload.article.images");
+        this.uploadRootPath = uploadRootPath;
+        this.imagesDir = imagesDir;
     }
 
     @Override

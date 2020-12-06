@@ -3,7 +3,6 @@ package com.log.blog.config;
 import com.log.blog.interceptor.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -11,7 +10,6 @@ import java.util.Set;
 
 
 @Configuration
-@PropertySource("/application.properties")
 public class InterceptorConfig implements WebMvcConfigurer {
 
     // JSP - userRequiredInterceptor
@@ -73,7 +71,7 @@ public class InterceptorConfig implements WebMvcConfigurer {
                 "/api/user/{userId:\\d{1,11}}$base        -> GET",
                 "/api/user/list*                          -> GET",          // GET由管理员拦截
                 "/api/article/{articleId:[A-Za-z\\d]{32}} -> GET, DELETE",  // DELETE由管理员拦截
-                "/api/article/list                        -> GET</value>"
+                "/api/article/list                        -> GET"
         ));
     }
 

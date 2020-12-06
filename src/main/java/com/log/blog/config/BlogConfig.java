@@ -3,6 +3,7 @@ package com.log.blog.config;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.log.blog.converter.*;
 import org.hibernate.validator.HibernateValidator;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -18,7 +19,7 @@ import java.util.Set;
 
 
 @Configuration
-@PropertySource("/application.properties")
+@MapperScan("com.log.blog.mapper")
 public class BlogConfig implements WebMvcConfigurer {
 
     @Bean
@@ -53,8 +54,8 @@ public class BlogConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/static/**").addResourceLocations("/static/");
-        registry.addResourceHandler("/m/*.html").addResourceLocations("/html/");
+        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/m/*.html").addResourceLocations("classpath:/html/");
     }
 
     @Override

@@ -3,14 +3,15 @@ package com.log.blog.service.impl;
 import com.log.blog.entity.Article;
 import com.log.blog.mapper.ArticleMapper;
 import com.log.blog.service.ArticleAdvancedService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.FileSystemException;
 import java.sql.SQLException;
 import java.util.Date;
@@ -25,12 +26,16 @@ public class ArticleAdvancedServiceImpl extends ArticleServiceImpl implements Ar
     private String uploadRootPath;
     private String imagesDir;
 
+    private static final Logger logger = LoggerFactory.getLogger(ArticleAdvancedServiceImpl.class);
+
     @Autowired
-    public void init(ArticleMapper articleMapper, Environment environment) {
-        super.init(articleMapper, environment);
+    public void init(ArticleMapper articleMapper,
+                     @Value("${upload.rootPath}") String uploadRootPath,
+                     @Value("${upload.article.images}") String imagesDir) {
+        super.init(articleMapper, uploadRootPath, imagesDir);
         this.articleMapper = articleMapper;
-        this.uploadRootPath = environment.getProperty("upload.rootPath");
-        this.imagesDir = environment.getProperty("upload.article.images");
+        this.uploadRootPath = uploadRootPath;
+        this.imagesDir = imagesDir;
     }
 
     @Override
@@ -90,9 +95,15 @@ public class ArticleAdvancedServiceImpl extends ArticleServiceImpl implements Ar
         try {
             if (!file.exists() && !file.createNewFile())
                 throw new FileSystemException("failed be create image file [" + path + ']');
-            image.transferTo(file);
+
+            try (FileOutputStream os = new FileOutputStream(file);
+                 InputStream in = image.getInputStream()) {
+                in.transferTo(os);
+            }
+
             return fileName;
         } catch (IOException e) {
+            logger.error("Failed be upload image file.", e);
             return null;
         }
     }
