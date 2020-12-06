@@ -1,7 +1,8 @@
 # iBolg
-基于 Spring + Spring MVC + MyBatis 搭建的博客平台。现已适配前后端分离。
+基于 Spring Boot + MyBatis 搭建的博客平台。现已适配前后端分离。
 
 ## 网站入口
+> 桌面版暂不可用。
 * 桌面版（JSP）
     * 主页：`/`
     * 管理员后台：`/admin/`
@@ -44,17 +45,15 @@
     * 鉴权：通过拦截器检查Session鉴权信息，阻止非法访问。
     * 防XSS攻击：采用Apache的Text库把特殊字符编码为HTML实体。
 * 数据
-    * 数据源：采用SpringJDBC库和MyBatisSpring库管理数据源（MySQL）。
+    * 数据源：采用 mybatis-spring-boot-starter 库管理数据源（MySQL）。
     * 验证：采用HibernateValidator库简化数据验证过程。
-    * 文件：采用Apache的FileUpload库实现图片上传。
     * 国际化：通过信息源（MessageSource）为不同区域的用户自动匹配翻译。
 * 视图
-    * 模板引擎：桌面版采用JSP渲染视图。
+    * ~~模板引擎：桌面版采用JSP渲染视图。~~
     * 前端分离：移动版采用Vue.js库渲染视图。
     * RESTful API：自定义通用的响应模板，并采用Jackson库将其序列化为JSON。
 
 ## 设计图
+> 设计图暂未更新为 Spring boot 版本。
 * PDF：[design/设计图.pdf](design/设计图.pdf)
 * JPG：[design/设计图.jpg](design/设计图.jpg)
-
-![设计图](design/设计图.jpg)
