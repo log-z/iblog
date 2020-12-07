@@ -3,7 +3,6 @@ package com.log.blog.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.log.blog.vo.rest.RestResult;
 import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +14,9 @@ import java.util.Locale;
 @RestControllerAdvice (basePackages = "com.log.blog.controller.rest")
 public class BlogRestControllerAdvice {
     private static final String PATTERN_REQUEST_ID = "[A-Za-z0-9]{0,1024}";
-    private RestResult result;
+    private final RestResult result;
 
-    @Autowired
-    public void setResult(RestResult result) {
+    public BlogRestControllerAdvice(RestResult result) {
         this.result = result;
     }
 

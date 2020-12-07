@@ -6,7 +6,6 @@ import com.log.blog.entity.User;
 import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.MediaType;
@@ -24,12 +23,11 @@ import java.util.List;
 @Scope("prototype")
 public class ArticlePublicController {
     private static final int LIST_ITEM_NUMBER = 10;
-    private ArticleService articleService;
-    private UserService userService;
+    private final ArticleService articleService;
+    private final UserService userService;
 
-    @Autowired
-    public void init(@Qualifier("articleBasicService") ArticleService articleService,
-                     @Qualifier("userBasicService") UserService userService) {
+    public ArticlePublicController(@Qualifier("articleBasicService") ArticleService articleService,
+                                   @Qualifier("userBasicService") UserService userService) {
         this.articleService = articleService;
         this.userService = userService;
     }

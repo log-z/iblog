@@ -5,7 +5,6 @@ import com.log.blog.entity.User;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.utils.MappingUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
@@ -23,12 +22,11 @@ import java.util.*;
 @Scope("prototype")
 public class UserRequiredInterceptor implements HandlerInterceptor {
     public static final String REQUEST_KEY_CURRENT_USER = "currentUser";
-    private UserService userService;
+    private final UserService userService;
     private String errorPath;
     private Map<String, Set<String>> advancedExcludeMapping = Collections.emptyMap();
 
-    @Autowired
-    public void init(@Qualifier("userBasicService") UserService userService) {
+    public UserRequiredInterceptor(@Qualifier("userBasicService") UserService userService) {
         this.userService = userService;
     }
 

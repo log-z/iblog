@@ -5,7 +5,6 @@ import com.log.blog.mapper.ArticleMapper;
 import com.log.blog.service.ArticleAdvancedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -22,17 +21,16 @@ import java.util.UUID;
 public class ArticleAdvancedServiceImpl extends ArticleServiceImpl implements ArticleAdvancedService {
     private static final Set<String> SUPPORT_IMAGE_EXTENSIONS = Set.of("jpg", "png");
 
-    private ArticleMapper articleMapper;
-    private String uploadRootPath;
-    private String imagesDir;
+    private final ArticleMapper articleMapper;
+    private final String uploadRootPath;
+    private final String imagesDir;
 
     private static final Logger logger = LoggerFactory.getLogger(ArticleAdvancedServiceImpl.class);
 
-    @Autowired
-    public void init(ArticleMapper articleMapper,
+    public ArticleAdvancedServiceImpl(ArticleMapper articleMapper,
                      @Value("${upload.rootPath}") String uploadRootPath,
                      @Value("${upload.article.images}") String imagesDir) {
-        super.init(articleMapper, uploadRootPath, imagesDir);
+        super(articleMapper, uploadRootPath, imagesDir);
         this.articleMapper = articleMapper;
         this.uploadRootPath = uploadRootPath;
         this.imagesDir = imagesDir;

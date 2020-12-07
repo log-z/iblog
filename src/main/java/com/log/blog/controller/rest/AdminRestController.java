@@ -7,7 +7,6 @@ import com.log.blog.service.AdminAdvancedService;
 import com.log.blog.vo.rest.RestAdmin;
 import com.log.blog.vo.rest.RestResult;
 import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
@@ -22,12 +21,11 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/api/admin")
 public class AdminRestController {
     private static final String DATA_PROPERTY_ADMIN_INFO = "admin";
-    private AdminAdvancedService adminAdvancedService;
-    private ConversionService restConverterService;
+    private final AdminAdvancedService adminAdvancedService;
+    private final ConversionService restConverterService;
 
-    @Autowired
-    public void init(AdminAdvancedService adminAdvancedService,
-                     @Qualifier("restConverterService") ConversionService restConverterService) {
+    public AdminRestController(AdminAdvancedService adminAdvancedService,
+                               @Qualifier("restConverterService") ConversionService restConverterService) {
         this.adminAdvancedService = adminAdvancedService;
         this.restConverterService = restConverterService;
     }

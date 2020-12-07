@@ -5,7 +5,6 @@ import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.validator.PasswordAgainValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,12 +21,11 @@ import javax.servlet.http.HttpSession;
 @RequestMapping("/admin")
 public class AdminPublicController {
     public final static String SESSION_KEY_ADMIN_IDENTITY = "adminIdentity";
-    private AdminService adminService;
-    private Validator passwordAgainValidator;
+    private final AdminService adminService;
+    private final Validator passwordAgainValidator;
 
-    @Autowired
-    public void init(@Qualifier("adminBasicService") AdminService adminService,
-                     PasswordAgainValidator passwordAgainValidator) {
+    public AdminPublicController(@Qualifier("adminBasicService") AdminService adminService,
+                                 PasswordAgainValidator passwordAgainValidator) {
         this.adminService = adminService;
         this.passwordAgainValidator = passwordAgainValidator;
     }

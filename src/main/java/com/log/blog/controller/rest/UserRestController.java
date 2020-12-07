@@ -12,7 +12,6 @@ import com.log.blog.vo.rest.RestRange;
 import com.log.blog.vo.rest.RestResult;
 import com.log.blog.vo.rest.RestUser;
 import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
@@ -41,12 +40,11 @@ public class UserRestController {
     private static final String DATA_PROPERTY_USER_LIST = "users";
     private static final String DATA_PROPERTY_RANGE = "range";
 
-    private UserAdvancedService userAdvancedService;
-    private ConversionService restConversionService;
-    private Validator passwordAgainValidator;
+    private final UserAdvancedService userAdvancedService;
+    private final ConversionService restConversionService;
+    private final Validator passwordAgainValidator;
 
-    @Autowired
-    public void init(
+    public UserRestController(
             UserAdvancedService userAdvancedService,
             @Qualifier("restConverterService") ConversionService restConversionService,
             PasswordAgainValidator passwordAgainValidator

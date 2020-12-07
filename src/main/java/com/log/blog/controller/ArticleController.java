@@ -6,7 +6,6 @@ import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,10 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class ArticleController {
-    private ArticleAdvancedService articleAdvancedService;
+    private final ArticleAdvancedService articleAdvancedService;
 
-    @Autowired
-    public void init(ArticleAdvancedService articleAdvancedService) {
+    public ArticleController(ArticleAdvancedService articleAdvancedService) {
         this.articleAdvancedService = articleAdvancedService;
     }
 

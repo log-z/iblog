@@ -3,7 +3,6 @@ package com.log.blog.interceptor;
 import com.log.blog.controller.AdminPublicController;
 import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminAdvancedService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,10 +14,9 @@ import javax.servlet.http.HttpSession;
 @Component
 @Scope("prototype")
 public class AdminLoggedInterceptor implements HandlerInterceptor {
-    private AdminAdvancedService adminAdvancedService;
+    private final AdminAdvancedService adminAdvancedService;
 
-    @Autowired
-    public void init(AdminAdvancedService adminAdvancedService) {
+    public AdminLoggedInterceptor(AdminAdvancedService adminAdvancedService) {
         this.adminAdvancedService = adminAdvancedService;
     }
 

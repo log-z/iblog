@@ -9,7 +9,6 @@ import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.validator.PasswordAgainValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,12 +24,11 @@ import java.util.List;
 public class UserPublicController {
     public static final String SESSION_KEY_USER_IDENTITY = "userIdentity";
     private static final int LIST_ITEM_NUMBER = 10;
-    private UserService userService;
-    private ArticleService articleService;
-    private Validator passwordAgainValidator;
+    private final UserService userService;
+    private final ArticleService articleService;
+    private final Validator passwordAgainValidator;
 
-    @Autowired
-    public void init(
+    public UserPublicController(
             @Qualifier("userBasicService") UserService userService,
             @Qualifier("articleBasicService") ArticleService articleService,
             PasswordAgainValidator passwordAgainValidator

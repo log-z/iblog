@@ -4,7 +4,6 @@ import com.log.blog.dto.Range;
 import com.log.blog.entity.User;
 import com.log.blog.mapper.UserMapper;
 import com.log.blog.service.UserAdvancedService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,12 +14,11 @@ import java.util.List;
 
 @Service("userAdvancedService")
 public class UserAdvancedServiceImpl extends UserServiceImpl implements UserAdvancedService {
-    private UserMapper userMapper;
-    private PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void init(UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        super.init(userMapper, passwordEncoder);
+    public UserAdvancedServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+        super(userMapper, passwordEncoder);
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }

@@ -5,7 +5,6 @@ import com.log.blog.entity.User;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.utils.MappingUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,11 +20,10 @@ import java.util.Set;
 @Component
 @Scope("prototype")
 public class UserOptionalInterceptor implements HandlerInterceptor {
-    private UserService userService;
+    private final UserService userService;
     private Map<String, Set<String>> advancedMapping = Collections.emptyMap();
 
-    @Autowired
-    public void init(@Qualifier("userBasicService") UserService userService) {
+    public UserOptionalInterceptor(@Qualifier("userBasicService") UserService userService) {
         this.userService = userService;
     }
 

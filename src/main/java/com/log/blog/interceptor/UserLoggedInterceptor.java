@@ -3,7 +3,6 @@ package com.log.blog.interceptor;
 import com.log.blog.controller.UserPublicController;
 import com.log.blog.entity.User;
 import com.log.blog.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -16,10 +15,9 @@ import javax.servlet.http.HttpSession;
 @Component
 @Scope("prototype")
 public class UserLoggedInterceptor implements HandlerInterceptor {
-    private UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    public void init(@Qualifier("userBasicService") UserService userService) {
+    public UserLoggedInterceptor(@Qualifier("userBasicService") UserService userService) {
         this.userService = userService;
     }
 

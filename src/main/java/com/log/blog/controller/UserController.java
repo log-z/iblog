@@ -6,7 +6,6 @@ import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.UserAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,12 +18,11 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 public class UserController {
-    private UserAdvancedService userAdvancedService;
-    private Validator passwordAgainValidator;
+    private final UserAdvancedService userAdvancedService;
+    private final Validator passwordAgainValidator;
 
-    @Autowired
-    public void init(UserAdvancedService userAdvancedService,
-                     @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
+    public UserController(UserAdvancedService userAdvancedService,
+                          @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
         this.userAdvancedService = userAdvancedService;
         this.passwordAgainValidator = passwordAgainValidator;
     }

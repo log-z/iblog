@@ -3,7 +3,6 @@ package com.log.blog.service.impl;
 import com.log.blog.entity.Admin;
 import com.log.blog.mapper.AdminMapper;
 import com.log.blog.service.AdminService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,11 +13,10 @@ import java.sql.SQLException;
 @Service("adminBasicService")
 @DependsOn({"passwordEncoder", "adminMapper"})
 public class AdminServiceImpl implements AdminService {
-    private AdminMapper adminMapper;
-    private PasswordEncoder passwordEncoder;
+    private final AdminMapper adminMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void init(PasswordEncoder passwordEncoder, AdminMapper adminMapper) {
+    public AdminServiceImpl(PasswordEncoder passwordEncoder, AdminMapper adminMapper) {
         this.passwordEncoder = passwordEncoder;
         this.adminMapper = adminMapper;
     }

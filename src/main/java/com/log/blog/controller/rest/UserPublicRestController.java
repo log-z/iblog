@@ -8,7 +8,6 @@ import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.rest.RestResult;
 import com.log.blog.vo.rest.RestUser;
 import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
@@ -30,12 +29,11 @@ import static com.log.blog.controller.UserPublicController.SESSION_KEY_USER_IDEN
 public class UserPublicRestController {
     private static final String DATA_PROPERTY_USER_INFO = "user";
 
-    private UserService userService;
-    private ConversionService restConversionService;
-    private Validator passwordAgainValidator;
+    private final UserService userService;
+    private final ConversionService restConversionService;
+    private final Validator passwordAgainValidator;
 
-    @Autowired
-    public void init(
+    public UserPublicRestController(
             @Qualifier("userBasicService") UserService userService,
             @Qualifier("restConverterService") ConversionService restConversionService,
             PasswordAgainValidator passwordAgainValidator

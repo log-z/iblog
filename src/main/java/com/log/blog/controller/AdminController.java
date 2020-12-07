@@ -6,7 +6,6 @@ import com.log.blog.entity.User;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.service.UserAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +17,10 @@ import java.util.List;
 @RequestMapping("/admin")
 public class AdminController {
     private static final int LIST_ITEM_NUMBER = 20;
-    private UserAdvancedService userAdvancedService;
-    private ArticleAdvancedService articleAdvancedService;
+    private final UserAdvancedService userAdvancedService;
+    private final ArticleAdvancedService articleAdvancedService;
 
-    @Autowired
-    public void init(UserAdvancedService userAdvancedService, ArticleAdvancedService articleAdvancedService) {
+    public AdminController(UserAdvancedService userAdvancedService, ArticleAdvancedService articleAdvancedService) {
         this.userAdvancedService = userAdvancedService;
         this.articleAdvancedService = articleAdvancedService;
     }

@@ -3,7 +3,6 @@ package com.log.blog.service.impl;
 import com.log.blog.entity.User;
 import com.log.blog.mapper.UserMapper;
 import com.log.blog.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,11 +11,10 @@ import java.sql.SQLException;
 
 @Service("userBasicService")
 public class UserServiceImpl implements UserService {
-    private UserMapper userMapper;
-    private PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void init(UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }

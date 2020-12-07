@@ -8,7 +8,6 @@ import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.utils.AuthenticationUtils;
 import com.log.blog.vo.rest.RestResult;
 import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
@@ -30,11 +29,10 @@ public class ArticleRestController {
     private static final String DATA_PROPERTY_ARTICLE_ID = "articleId";
     private static final String DATA_PROPERTY_IMAGE_NAME = "imageName";
 
-    private ArticleAdvancedService articleAdvancedService;
-    private ConversionService restConversionService;
+    private final ArticleAdvancedService articleAdvancedService;
+    private final ConversionService restConversionService;
 
-    @Autowired
-    public void init(ArticleAdvancedService articleAdvancedService,
+    public ArticleRestController(ArticleAdvancedService articleAdvancedService,
                      @Qualifier("restConverterService") ConversionService restConversionService) {
         this.articleAdvancedService = articleAdvancedService;
         this.restConversionService = restConversionService;

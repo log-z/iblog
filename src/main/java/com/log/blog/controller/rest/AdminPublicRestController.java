@@ -7,7 +7,6 @@ import com.log.blog.service.AdminService;
 import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.rest.RestResult;
 import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -23,12 +22,11 @@ import static com.log.blog.controller.AdminPublicController.SESSION_KEY_ADMIN_ID
 @RestController
 @RequestMapping("/api/admin")
 public class AdminPublicRestController {
-    private AdminService adminService;
-    private Validator passwordAgainValidator;
+    private final AdminService adminService;
+    private final Validator passwordAgainValidator;
 
-    @Autowired
-    public void init(@Qualifier("adminBasicService") AdminService adminService,
-                     PasswordAgainValidator passwordAgainValidator) {
+    public AdminPublicRestController(@Qualifier("adminBasicService") AdminService adminService,
+                                     PasswordAgainValidator passwordAgainValidator) {
         this.adminService = adminService;
         this.passwordAgainValidator = passwordAgainValidator;
     }

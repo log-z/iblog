@@ -2,7 +2,6 @@ package com.log.blog.vo.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -23,10 +22,10 @@ public class RestResult {
     private static final String RENDER_MESSAGE_SUFFIX = "}";
 
     @JsonView(View.Base.class)
-    private RestRootError errors = new RestRootError();
+    private final RestRootError errors;
 
     @JsonView(View.Base.class)
-    private RestData data;
+    private final RestData data;
 
     @JsonView(View.Base.class)
     private String requestId;
@@ -35,26 +34,20 @@ public class RestResult {
     private Locale locale;
 
     @JsonIgnore
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
+
+    public RestResult(RestRootError errors, RestData data, MessageSource messageSource) {
+        this.errors = errors;
+        this.data = data;
+        this.messageSource = messageSource;
+    }
 
     public RestRootError getErrors() {
         return errors;
     }
 
-    @Autowired
-    public void setErrors(RestRootError errors) {
-        this.errors = errors;
-    }
-
     public RestData getData() {
-        if (data == null)
-            data = new RestData();
         return data;
-    }
-
-    @Autowired
-    public void setData(RestData data) {
-        this.data = data;
     }
 
     public String getRequestId() {
@@ -69,11 +62,6 @@ public class RestResult {
     public RestResult setLocale(Locale locale) {
         this.locale = locale;
         return this;
-    }
-
-    @Autowired
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
     }
 
     public RestResult setError(String target, String code, String defaultMessage) {
