@@ -85,32 +85,32 @@ public class UserPublicController {
         return "user-login.jsp";
     }
 
-    @GetMapping("/{targetUserId:\\d{1,11}}")
-    public String home(
-            @PathVariable String targetUserId,
-            @RequestAttribute(value = UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER, required = false) User currentUser,
-            @RequestParam(required = false) Integer num,
-            @RequestParam(required = false) Integer offset,
-            Model model
-    ) {
-        User targetUser = userService.getUser(targetUserId);
-        if (targetUser == null) return null;
-        model.addAttribute("targetUser", HtmlEscapeUtils.escape(targetUser));
-
-        Article feature = new Article();
-        feature.setAuthorId(targetUserId);
-        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<Article> articles = articleService.search(feature, range);
-        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("articlesCount", articleService.searchCount(feature));
-        model.addAttribute("range", range);
-
-        boolean editable = false;
-        if (currentUser != null && currentUser.getUserId().equals(targetUserId))
-            editable = true;
-        model.addAttribute("editable", editable);
-        return "user-home.jsp";
-    }
+//    @GetMapping("/{targetUserId:\\d{1,11}}")
+//    public String home(
+//            @PathVariable String targetUserId,
+//            @RequestAttribute(value = UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER, required = false) User currentUser,
+//            @RequestParam(required = false) Integer num,
+//            @RequestParam(required = false) Integer offset,
+//            Model model
+//    ) {
+//        User targetUser = userService.getUser(targetUserId);
+//        if (targetUser == null) return null;
+//        model.addAttribute("targetUser", HtmlEscapeUtils.escape(targetUser));
+//
+//        Article feature = new Article();
+//        feature.setAuthorId(targetUserId);
+//        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
+//        List<Article> articles = articleService.search(feature, range);
+//        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+//        model.addAttribute("articlesCount", articleService.searchCount(feature));
+//        model.addAttribute("range", range);
+//
+//        boolean editable = false;
+//        if (currentUser != null && currentUser.getUserId().equals(targetUserId))
+//            editable = true;
+//        model.addAttribute("editable", editable);
+//        return "user-home.jsp";
+//    }
 
     @RequestMapping("/error/401")
     public String error401() {

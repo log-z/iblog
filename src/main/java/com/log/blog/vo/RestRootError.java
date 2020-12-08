@@ -1,4 +1,4 @@
-package com.log.blog.vo.rest;
+package com.log.blog.vo;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.context.annotation.Scope;

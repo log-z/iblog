@@ -3,10 +3,21 @@ package com.log.blog.dto;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import java.util.Date;
 
-public class ArticleForm {
+import com.log.blog.dto.ValidatorGroup.Creating;
+import com.log.blog.dto.ValidatorGroup.Updating;
+import com.log.blog.dto.ValidatorGroup.Querying;
+
+public class ArticleParam {
+    private String articleId;
+
+    private String authorId;
+
     @NotBlank(groups = {Creating.class})
     @Length(max = 40, groups = {Creating.class, Updating.class}, message = "{article.title.tooLong}")
     private String title;
@@ -21,10 +32,31 @@ public class ArticleForm {
             message = "{article.imageName.invalid}")
     private String imageName;
 
-    public interface Creating { }
-    public interface Updating { }
+    private Date createTime;
 
-    public ArticleForm() {
+    private boolean fuzzySearch = false;
+
+    @Valid
+    @NotNull(groups = Querying.class)
+    private PageRange pageRange;
+
+    public ArticleParam() {
+    }
+
+    public String getArticleId() {
+        return articleId;
+    }
+
+    public void setArticleId(String articleId) {
+        this.articleId = articleId;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
     public String getTitle() {
@@ -58,4 +90,29 @@ public class ArticleForm {
     public void setImageName(String imageName) {
         this.imageName = imageName;
     }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public boolean isFuzzySearch() {
+        return fuzzySearch;
+    }
+
+    public void setFuzzySearch(boolean fuzzySearch) {
+        this.fuzzySearch = fuzzySearch;
+    }
+
+    public PageRange getPageRange() {
+        return pageRange;
+    }
+
+    public void setPageRange(PageRange pageRange) {
+        this.pageRange = pageRange;
+    }
+
 }

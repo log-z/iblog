@@ -1,7 +1,7 @@
 package com.log.blog.converter;
 
 import com.log.blog.entity.Admin;
-import com.log.blog.vo.rest.RestAdmin;
+import com.log.blog.vo.RestAdmin;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 

@@ -1,12 +1,11 @@
-package com.log.blog.vo.rest;
+package com.log.blog.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import java.util.Date;
-import java.util.Objects;
 
-public class RestArticle {
+public class ArticleVO {
     @JsonView({View.Summary.class, View.Details.class})
     private String articleId;
 
@@ -24,6 +23,9 @@ public class RestArticle {
     private Date createTime;
 
     @JsonView(View.Details.class)
+    private String imageName;
+
+    @JsonView(View.Details.class)
     private String imageUrl;
 
     @JsonView({View.Summary.class, View.Details.class})
@@ -32,7 +34,7 @@ public class RestArticle {
     @JsonView(View.Details.class)
     private String authorHomeUrl;
 
-    public RestArticle() {
+    public ArticleVO() {
     }
 
     public String getArticleId() {
@@ -75,6 +77,14 @@ public class RestArticle {
         this.createTime = createTime;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
@@ -97,25 +107,5 @@ public class RestArticle {
 
     public void setAuthorHomeUrl(String authorHomeUrl) {
         this.authorHomeUrl = authorHomeUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        RestArticle that = (RestArticle) o;
-        return Objects.equals(articleId, that.articleId) &&
-                Objects.equals(authorId, that.authorId) &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(content, that.content) &&
-                Objects.equals(createTime, that.createTime) &&
-                Objects.equals(imageUrl, that.imageUrl) &&
-                Objects.equals(articleUrl, that.articleUrl) &&
-                Objects.equals(authorHomeUrl, that.authorHomeUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(articleId, authorId, title, content, createTime, imageUrl, articleUrl, authorHomeUrl);
     }
 }

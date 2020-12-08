@@ -1,10 +1,10 @@
 package com.log.blog.utils;
 
-import com.log.blog.dto.ArticleForm;
 import com.log.blog.dto.NameForm;
 import com.log.blog.entity.Admin;
 import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
+import com.log.blog.vo.ArticleVO;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.List;
@@ -40,11 +40,11 @@ public class HtmlEscapeUtils {
         return article;
     }
 
-    public static ArticleForm escape(ArticleForm form) {
-        if (form == null) return null;
-        form.setTitle(escape(form.getTitle()));
-        form.setContent(escape(form.getContent()));
-        return form;
+    public static ArticleVO escape(ArticleVO articleVO) {
+        if (articleVO == null) return null;
+        articleVO.setTitle(escape(articleVO.getTitle()));
+        articleVO.setContent(escape(articleVO.getContent()));
+        return articleVO;
     }
 
     public static NameForm escape(NameForm form) {

@@ -1,4 +1,4 @@
-package com.log.blog.vo.rest;
+package com.log.blog.vo;
 
 public class View {
     public interface Base { }

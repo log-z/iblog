@@ -1,16 +1,17 @@
 package com.log.blog.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.log.blog.dto.Range;
-import com.log.blog.entity.Article;
+import com.log.blog.dto.ArticleParam;
+import com.log.blog.dto.ValidatorGroup;
 import com.log.blog.service.ArticleService;
-import com.log.blog.vo.rest.RestArticle;
-import com.log.blog.vo.rest.RestRange;
-import com.log.blog.vo.rest.RestResult;
-import com.log.blog.vo.rest.View;
+import com.log.blog.vo.ArticleVO;
+import com.log.blog.vo.PageVO;
+import com.log.blog.vo.RestResult;
+import com.log.blog.vo.View;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,6 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/article")
@@ -44,54 +44,29 @@ public class ArticlePublicRestController {
             @ModelAttribute RestResult result,
             HttpServletRequest request
     ) throws NoHandlerFoundException {
-        Article article = articleService.getArticle(articleId);
+        ArticleVO article = articleService.getArticle(articleId);
         if (article == null)
             throw new NoHandlerFoundException("GET", request.getRequestURI(), new HttpHeaders());
 
-        RestArticle restArticle = restConversionService.convert(article, RestArticle.class);
-        return result.setDataProperty(DATA_PROPERTY_ARTICLE_INFO, restArticle);
+        return result.setDataProperty(DATA_PROPERTY_ARTICLE_INFO, article);
     }
 
     @GetMapping("/list")
     @JsonView(View.Summary.class)
     public RestResult list(
-            @Validated Range range,
+            @Validated(ValidatorGroup.Querying.class) ArticleParam feature,
             BindingResult errors,
-            @RequestParam(required = false) String keyword,
-            Article feature,
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
         if (errors.hasErrors()) {
-            response.setStatus(400);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             return result.setErrors(errors);
         }
 
-        long count;
-        List<Article> articles;
-        if (!feature.isBlank()) {
-            count = articleService.searchCount(feature);
-            articles = articleService.search(feature, range);
-        } else if (keyword != null) {
-            count = articleService.searchCount(keyword);
-            articles = articleService.search(keyword, range);
-        } else {
-            count = articleService.getArticlesCount();
-            articles = articleService.getArticles(range);
-        }
-
-        RestRange restRange = restConversionService.convert(range, RestRange.class);
-        assert restRange != null;
-        restRange.setTotal(count);
-
-        List<RestArticle> restArticles = articles.stream()
-                .map(article -> {
-                    RestArticle restArticle = restConversionService.convert(article, RestArticle.class);
-                    if (restArticle == null) restArticle = new RestArticle();
-                    return restArticle;
-                }).collect(Collectors.toUnmodifiableList());
-
-        return result.setDataProperty(DATA_PROPERTY_RANGE, restRange)
-                .setDataProperty(DATA_PROPERTY_ARTICLE_LIST, restArticles);
+        List<ArticleVO> articles = articleService.listArticles(feature);
+        PageVO pageVO = restConversionService.convert(articles, PageVO.class);
+        return result.setDataProperty(DATA_PROPERTY_RANGE, pageVO)
+                .setDataProperty(DATA_PROPERTY_ARTICLE_LIST, articles);
     }
 }

@@ -39,15 +39,13 @@ public class BlogConfig implements WebMvcConfigurer {
     public ConversionServiceFactoryBean restConverterService(Admin2RestAdminConverter admin2RestAdminConverter,
                                                              User2RestUserConverter user2RestUserConverter,
                                                              Article2RestArticleConverter article2RestArticleConverter,
-                                                             Range2RestRangeConverter range2RestRangeConverter,
-                                                             ArticleForm2ArticleConverter articleForm2ArticleConverter) {
+                                                             Page2PageRangeVOConverter page2PageRangeConverter) {
         ConversionServiceFactoryBean converterService = new ConversionServiceFactoryBean();
         converterService.setConverters(Set.of(
                 admin2RestAdminConverter,
                 user2RestUserConverter,
                 article2RestArticleConverter,
-                range2RestRangeConverter,
-                articleForm2ArticleConverter
+                page2PageRangeConverter
         ));
         return converterService;
     }

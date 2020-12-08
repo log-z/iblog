@@ -10,6 +10,9 @@ import org.springframework.validation.Validator;
 import java.util.List;
 import java.util.Objects;
 
+// TODO: 改用HibernateValidator
+//   @ScriptAssert(lang = "jexl", script = "_.password eq _.passwordAgain", alias = "_", reportOn = "passwordAgain")
+
 @Component
 public class PasswordAgainValidator implements Validator {
     private static final String ERROR_CODE = "passwordAgain.inconsistent";

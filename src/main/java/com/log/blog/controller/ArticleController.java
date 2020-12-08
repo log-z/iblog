@@ -1,11 +1,12 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.ArticleForm;
-import com.log.blog.entity.Article;
+import com.log.blog.dto.ArticleParam;
+import com.log.blog.dto.ValidatorGroup;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
+import com.log.blog.vo.ArticleVO;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,15 +23,10 @@ public class ArticleController {
 
     @GetMapping({"/edit/", "/edit/{articleId:[A-Za-z\\d]{32}}"})
     public String edit(@PathVariable(required = false) String articleId, Model model) {
-        ArticleForm form = new ArticleForm();
-        if (articleId != null) {
-            Article article = articleAdvancedService.getArticle(articleId);
-            if (article != null) {
-                form.setTitle(article.getTitle());
-                form.setContent(article.getContent());
-            }
-        }
-        model.addAttribute("form", HtmlEscapeUtils.escape(form));
+        ArticleVO articleVO = articleId != null ?
+                articleAdvancedService.getArticle(articleId) :
+                new ArticleVO();
+        model.addAttribute("form", HtmlEscapeUtils.escape(articleVO));
         return "article-editor.jsp";
     }
 
@@ -38,20 +34,20 @@ public class ArticleController {
     public String update(
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
             @PathVariable(required = false) String articleId,
-            @Validated(ArticleForm.Updating.class) @ModelAttribute("form") ArticleForm form,
+            @Validated(ValidatorGroup.Updating.class) @ModelAttribute("form") ArticleParam articleParam,
             BindingResult errors,
             Model model
     ) {
         if (!errors.hasErrors()) {
-            // 准备文章载体
-            Article article = new Article();
-            article.setTitle(form.getTitle());
-            article.setContent(form.getContent());
-            article.setImage(articleAdvancedService.uploadImage(form.getImage()));
             // 创建或更新文章
-            boolean successful = articleId == null
-                    ? articleAdvancedService.insertArticle(user.getUserId(), article) != null
-                    : articleAdvancedService.updateArticle(articleId, article);
+            boolean successful;
+            if (articleId == null) {
+                articleParam.setAuthorId(user.getUserId());
+                successful = articleAdvancedService.insertArticle(articleParam) != null;
+            } else {
+                articleParam.setArticleId(articleId);
+                successful = articleAdvancedService.updateArticle(articleParam);
+            }
             model.addAttribute("successful", successful);
             return "article-updated.jsp";
         }

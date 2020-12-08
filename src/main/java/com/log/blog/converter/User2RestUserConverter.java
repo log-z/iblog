@@ -1,7 +1,7 @@
 package com.log.blog.converter;
 
 import com.log.blog.entity.User;
-import com.log.blog.vo.rest.RestUser;
+import com.log.blog.vo.RestUser;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;

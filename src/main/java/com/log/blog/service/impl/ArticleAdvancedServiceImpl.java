@@ -1,6 +1,6 @@
 package com.log.blog.service.impl;
 
-import com.log.blog.entity.Article;
+import com.log.blog.dto.ArticleParam;
 import com.log.blog.mapper.ArticleMapper;
 import com.log.blog.service.ArticleAdvancedService;
 import org.slf4j.Logger;
@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.FileSystemException;
-import java.sql.SQLException;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -42,39 +41,25 @@ public class ArticleAdvancedServiceImpl extends ArticleServiceImpl implements Ar
     }
 
     @Override
-    public String insertArticle(@NonNull String authorId, @NonNull Article article) {
-        article.setArticleId(createId());
-        article.setAuthorId(authorId);
-        article.setCreateTime(new Date());
-        try {
-            articleMapper.insetArticle(article);
-            return article.getArticleId();
-        } catch (SQLException e) {
-            return null;
-        }
+    public String insertArticle(@NonNull ArticleParam articleParam) {
+        articleParam.setArticleId(createId());
+        articleParam.setCreateTime(new Date());
+
+        articleMapper.insetArticle(articleParam);
+        return articleParam.getArticleId();
     }
 
     @Override
-    public boolean updateArticle(@NonNull String articleId, @NonNull Article article) {
-        article.setArticleId(articleId);
-        article.setAuthorId(null);
-        article.setCreateTime(null);
-        try {
-            articleMapper.updateArticle(article);
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
+    public boolean updateArticle(@NonNull ArticleParam articleParam) {
+        articleParam.setAuthorId(null);
+        articleParam.setCreateTime(null);
+
+        return articleMapper.updateArticle(articleParam);
     }
 
     @Override
     public boolean deleteArticle(@NonNull String articleId) {
-        try {
-            articleMapper.deleteArticle(articleId);
-            return true;
-        } catch (SQLException e) {
-            return false;
-        }
+        return articleMapper.deleteArticle(articleId);
     }
 
     @Override

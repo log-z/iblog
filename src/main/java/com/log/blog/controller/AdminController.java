@@ -50,19 +50,19 @@ public class AdminController {
         return "admin-show-users.jsp";
     }
 
-    @GetMapping("/articles")
-    public String showArticles(
-           @RequestParam(required = false) Integer num,
-           @RequestParam(required = false) Integer offset,
-           Model model
-    ) {
-        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<Article> articles = articleAdvancedService.getArticles(range);
-        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("articlesCount", articleAdvancedService.getArticlesCount());
-        model.addAttribute("range", range);
-        return "admin-show-articles.jsp";
-    }
+//    @GetMapping("/articles")
+//    public String showArticles(
+//           @RequestParam(required = false) Integer num,
+//           @RequestParam(required = false) Integer offset,
+//           Model model
+//    ) {
+//        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
+//        List<Article> articles = articleAdvancedService.getArticles(range);
+//        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+//        model.addAttribute("articlesCount", articleAdvancedService.getArticlesCount());
+//        model.addAttribute("range", range);
+//        return "admin-show-articles.jsp";
+//    }
 
     @GetMapping("/delete-user")
     public String deleteUser(String userId, Model model) {

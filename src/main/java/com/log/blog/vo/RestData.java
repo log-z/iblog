@@ -1,4 +1,4 @@
-package com.log.blog.vo.rest;
+package com.log.blog.vo;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

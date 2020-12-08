@@ -1,8 +1,8 @@
 package com.log.blog.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.log.blog.vo.rest.RestResult;
-import com.log.blog.vo.rest.View;
+import com.log.blog.vo.RestResult;
+import com.log.blog.vo.View;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

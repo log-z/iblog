@@ -6,8 +6,10 @@ import com.log.blog.entity.User;
 import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
+import com.log.blog.vo.ArticleVO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,48 +34,48 @@ public class ArticlePublicController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public String portal(
-            @RequestParam(required = false) Integer num,
-            @RequestParam(required = false) Integer offset,
-            Model model
-    ) {
-        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<Article> articles = articleService.getArticles(range);
-        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("articlesCount", articleService.getArticlesCount());
-        model.addAttribute("range", range);
-        return "article-search.jsp";
-    }
-
-    @GetMapping("/s")
-    public String search(
-            @RequestParam(required = false) Integer num,
-            @RequestParam(required = false) Integer offset,
-            String keyword,
-            Model model
-    ) {
-        if (keyword.isBlank()) {
-            return "redirect:/";
-        } else {
-            Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-            List<Article> articles = articleService.search(keyword, range);
-            model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-            model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
-            model.addAttribute("articlesCount", articleService.searchCount(keyword));
-            model.addAttribute("range", range);
-            return "article-search.jsp";
-        }
-    }
+//    @GetMapping("/")
+//    public String portal(
+//            @RequestParam(required = false) Integer num,
+//            @RequestParam(required = false) Integer offset,
+//            Model model
+//    ) {
+//        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
+//        List<Article> articles = articleService.getArticles(range);
+//        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+//        model.addAttribute("articlesCount", articleService.getArticlesCount());
+//        model.addAttribute("range", range);
+//        return "article-search.jsp";
+//    }
+//
+//    @GetMapping("/s")
+//    public String search(
+//            @RequestParam(required = false) Integer num,
+//            @RequestParam(required = false) Integer offset,
+//            String keyword,
+//            Model model
+//    ) {
+//        if (keyword.isBlank()) {
+//            return "redirect:/";
+//        } else {
+//            Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
+//            List<Article> articles = articleService.search(keyword, range);
+//            model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+//            model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
+//            model.addAttribute("articlesCount", articleService.searchCount(keyword));
+//            model.addAttribute("range", range);
+//            return "article-search.jsp";
+//        }
+//    }
 
     @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
     public String article(@PathVariable String articleId, Model model) {
-        Article article = articleService.getArticle(articleId);
-        if (article == null)
+        ArticleVO articleVO = articleService.getArticle(articleId);
+        if (articleVO == null)
             return null;
 
-        User user = userService.getUser(article.getAuthorId());
-        model.addAttribute("article", HtmlEscapeUtils.escape(article));
+        User user = userService.getUser(articleVO.getAuthorId());
+        model.addAttribute("article", HtmlEscapeUtils.escape(articleVO));
         model.addAttribute("author", HtmlEscapeUtils.escape(user));
         return "article-content.jsp";
     }
@@ -93,7 +95,7 @@ public class ArticlePublicController {
 
         String image = name + "." + suffix;
         if (!articleService.sendImage(image, response.getOutputStream())) {
-            response.setStatus(404);
+            response.setStatus(HttpStatus.NOT_FOUND.value());
         }
     }
 }

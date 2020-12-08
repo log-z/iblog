@@ -1,15 +1,14 @@
 package com.log.blog.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.log.blog.dto.ArticleForm;
-import com.log.blog.entity.Article;
+import com.log.blog.dto.ArticleParam;
+import com.log.blog.dto.ValidatorGroup;
 import com.log.blog.entity.User;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.utils.AuthenticationUtils;
-import com.log.blog.vo.rest.RestResult;
-import com.log.blog.vo.rest.View;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.convert.ConversionService;
+import com.log.blog.vo.ArticleVO;
+import com.log.blog.vo.RestResult;
+import com.log.blog.vo.View;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
@@ -30,37 +29,29 @@ public class ArticleRestController {
     private static final String DATA_PROPERTY_IMAGE_NAME = "imageName";
 
     private final ArticleAdvancedService articleAdvancedService;
-    private final ConversionService restConversionService;
 
-    public ArticleRestController(ArticleAdvancedService articleAdvancedService,
-                     @Qualifier("restConverterService") ConversionService restConversionService) {
+    public ArticleRestController(ArticleAdvancedService articleAdvancedService) {
         this.articleAdvancedService = articleAdvancedService;
-        this.restConversionService = restConversionService;
     }
 
     @PostMapping
     @JsonView(View.Base.class)
     public RestResult create(
             @RequestAttribute(REQUEST_KEY_CURRENT_USER) User user,
-            @Validated(ArticleForm.Creating.class) ArticleForm form,
+            @Validated(ValidatorGroup.Creating.class) ArticleParam articleParam,
             BindingResult errors,
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
         if (errors.hasErrors()) {
-            response.setStatus(400);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             return result.setErrors(errors);
         }
 
-        Article article = restConversionService.convert(form, Article.class);
-        assert article != null;
-        String articleId = articleAdvancedService.insertArticle(user.getUserId(), article);
-        if (articleId == null) {
-            throw new RuntimeException();
-        } else {
-            response.setStatus(201);
-            return result.setDataProperty(DATA_PROPERTY_ARTICLE_ID, articleId);
-        }
+        articleParam.setAuthorId(user.getUserId());
+        String articleId = articleAdvancedService.insertArticle(articleParam);
+        response.setStatus(HttpStatus.CREATED.value());
+        return result.setDataProperty(DATA_PROPERTY_ARTICLE_ID, articleId);
     }
 
     @PutMapping("/{articleId:[A-Za-z\\d]{32}}")
@@ -68,31 +59,27 @@ public class ArticleRestController {
     public RestResult update(
             @RequestAttribute(REQUEST_KEY_CURRENT_USER) User user,
             @PathVariable String articleId,
-            @Validated(ArticleForm.Updating.class) ArticleForm form,
+            @Validated(ValidatorGroup.Updating.class) ArticleParam articleParam,
             BindingResult errors,
             @ModelAttribute RestResult result,
             HttpServletRequest request,
             HttpServletResponse response
     ) throws NoHandlerFoundException {
         if (errors.hasErrors()) {
-            response.setStatus(400);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             return result.setErrors(errors);
         }
 
-        Article article = articleAdvancedService.getArticle(articleId);
-        if (article == null)
+        ArticleVO articleVO = articleAdvancedService.getArticle(articleId);
+        if (articleVO == null)
             throw new NoHandlerFoundException("PUT", request.getRequestURI(), new HttpHeaders());
 
-        AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), article.getAuthorId());
+        AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), articleVO.getAuthorId());
 
-        Article newArticle = restConversionService.convert(form, Article.class);
-        assert newArticle != null;
-        boolean successful = articleAdvancedService.updateArticle(articleId, newArticle);
-        if (successful) {
-            response.setStatus(204);
-            return null;
-        }
-        throw new RuntimeException();
+        articleParam.setArticleId(articleId);
+        articleAdvancedService.updateArticle(articleParam);
+        response.setStatus(HttpStatus.NO_CONTENT.value());
+        return null;
     }
 
     @DeleteMapping("/{articleId:[A-Za-z\\d]{32}}")
@@ -103,14 +90,12 @@ public class ArticleRestController {
             @ModelAttribute RestResult result,
             HttpServletRequest request
     ) throws NoHandlerFoundException {
-        Article article = articleAdvancedService.getArticle(articleId);
-        if (article == null)
+        ArticleVO articleVO = articleAdvancedService.getArticle(articleId);
+        if (articleVO == null)
             throw new NoHandlerFoundException("PUT", request.getRequestURI(), new HttpHeaders());
 
-        boolean successful = articleAdvancedService.deleteArticle(articleId);
-        if (successful)
-            return null;
-        throw new RuntimeException();
+        articleAdvancedService.deleteArticle(articleId);
+        return null;
     }
 
     @PostMapping("/upload-image")
