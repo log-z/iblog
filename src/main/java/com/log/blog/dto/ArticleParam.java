@@ -5,13 +5,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 import com.log.blog.dto.ValidatorGroup.Creating;
 import com.log.blog.dto.ValidatorGroup.Updating;
-import com.log.blog.dto.ValidatorGroup.Querying;
 
 public class ArticleParam {
     private String articleId;
@@ -37,8 +35,7 @@ public class ArticleParam {
     private boolean fuzzySearch = false;
 
     @Valid
-    @NotNull(groups = Querying.class)
-    private PageRange pageRange;
+    private PageRange pageRange = new PageRange();
 
     public ArticleParam() {
     }

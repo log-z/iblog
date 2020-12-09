@@ -6,7 +6,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Page2PageRangeVOConverter implements Converter<Page<?>, PageVO> {
+public class Page2PageVOConverter implements Converter<Page<?>, PageVO> {
     @Override
     public PageVO convert(Page<?> page) {
         PageVO pageVO = new PageVO();

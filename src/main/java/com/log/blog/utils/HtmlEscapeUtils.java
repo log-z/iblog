@@ -69,11 +69,11 @@ public class HtmlEscapeUtils {
         return users;
     }
 
-    public static List<Article> escapeArticles(List<Article> articles) {
-        if (articles == null) return null;
-        for (Article article : articles) {
+    public static List<ArticleVO> escapeArticles(List<ArticleVO> articleVOList) {
+        if (articleVOList == null) return null;
+        for (ArticleVO article : articleVOList) {
             escape(article);
         }
-        return articles;
+        return articleVOList;
     }
 }

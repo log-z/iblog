@@ -1,21 +1,27 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.Range;
-import com.log.blog.entity.Article;
+import com.github.pagehelper.Page;
+import com.log.blog.dto.ArticleParam;
+import com.log.blog.dto.PageRange;
+import com.log.blog.dto.ValidatorGroup;
 import com.log.blog.entity.User;
 import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.vo.ArticleVO;
+import com.log.blog.vo.PageVO;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,49 +30,67 @@ import java.util.List;
 @Controller
 @Scope("prototype")
 public class ArticlePublicController {
-    private static final int LIST_ITEM_NUMBER = 10;
     private final ArticleService articleService;
     private final UserService userService;
+    private final ConversionService conversionService;
 
     public ArticlePublicController(@Qualifier("articleBasicService") ArticleService articleService,
-                                   @Qualifier("userBasicService") UserService userService) {
+                                   @Qualifier("userBasicService") UserService userService,
+                                   @Qualifier("restConverterService") ConversionService conversionService) {
         this.articleService = articleService;
         this.userService = userService;
+        this.conversionService = conversionService;
     }
 
-//    @GetMapping("/")
-//    public String portal(
-//            @RequestParam(required = false) Integer num,
-//            @RequestParam(required = false) Integer offset,
-//            Model model
-//    ) {
-//        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-//        List<Article> articles = articleService.getArticles(range);
-//        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-//        model.addAttribute("articlesCount", articleService.getArticlesCount());
-//        model.addAttribute("range", range);
-//        return "article-search.jsp";
-//    }
-//
-//    @GetMapping("/s")
-//    public String search(
-//            @RequestParam(required = false) Integer num,
-//            @RequestParam(required = false) Integer offset,
-//            String keyword,
-//            Model model
-//    ) {
-//        if (keyword.isBlank()) {
-//            return "redirect:/";
-//        } else {
-//            Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-//            List<Article> articles = articleService.search(keyword, range);
-//            model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-//            model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
-//            model.addAttribute("articlesCount", articleService.searchCount(keyword));
-//            model.addAttribute("range", range);
-//            return "article-search.jsp";
-//        }
-//    }
+    @GetMapping("/")
+    public String portal(
+            @Validated(ValidatorGroup.Querying.class) PageRange pageRange,
+            BindingResult errors,
+            Model model
+    ) {
+        if (errors.hasErrors()) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.getReasonPhrase());
+        }
+
+        ArticleParam feature = new ArticleParam();
+        feature.setPageRange(pageRange);
+        List<ArticleVO> articles = articleService.listArticles(feature);
+        Page<?> page = (Page<?>) articles;
+
+        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+        model.addAttribute("articlesCount", page.getTotal());
+        model.addAttribute("range", conversionService.convert(page, PageVO.class));
+        return "article-search.jsp";
+    }
+
+    @GetMapping("/s")
+    public String search(
+            @Validated(ValidatorGroup.Querying.class) PageRange pageRange,
+            BindingResult errors,
+            String keyword,
+            Model model
+    ) {
+        if (errors.hasErrors()) {
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.getReasonPhrase());
+        }
+        if (keyword == null || keyword.isBlank()) {
+            return "redirect:/";
+        }
+
+        ArticleParam feature = new ArticleParam();
+        feature.setTitle(keyword);
+        feature.setContent(keyword);
+        feature.setPageRange(pageRange);
+        feature.setFuzzySearch(true);
+        List<ArticleVO> articles = articleService.listArticles(feature);
+        Page<?> page = (Page<?>) articles;
+
+        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+        model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
+        model.addAttribute("articlesCount", page.getTotal());
+        model.addAttribute("range", conversionService.convert(page, PageVO.class));
+        return "article-search.jsp";
+    }
 
     @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
     public String article(@PathVariable String articleId, Model model) {
