@@ -3,10 +3,10 @@ package com.log.blog.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.log.blog.dto.ArticleParam;
 import com.log.blog.dto.ValidatorGroup;
+import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.utils.AuthenticationUtils;
-import com.log.blog.vo.ArticleVO;
 import com.log.blog.vo.RestResult;
 import com.log.blog.vo.View;
 import org.springframework.http.HttpHeaders;
@@ -70,11 +70,11 @@ public class ArticleRestController {
             return result.setErrors(errors);
         }
 
-        ArticleVO articleVO = articleAdvancedService.getArticle(articleId);
-        if (articleVO == null)
+        Article article = articleAdvancedService.getArticle(articleId);
+        if (article == null)
             throw new NoHandlerFoundException("PUT", request.getRequestURI(), new HttpHeaders());
 
-        AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), articleVO.getAuthorId());
+        AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), article.getAuthorId());
 
         articleParam.setArticleId(articleId);
         articleAdvancedService.updateArticle(articleParam);
@@ -90,8 +90,8 @@ public class ArticleRestController {
             @ModelAttribute RestResult result,
             HttpServletRequest request
     ) throws NoHandlerFoundException {
-        ArticleVO articleVO = articleAdvancedService.getArticle(articleId);
-        if (articleVO == null)
+        Article article = articleAdvancedService.getArticle(articleId);
+        if (article == null)
             throw new NoHandlerFoundException("PUT", request.getRequestURI(), new HttpHeaders());
 
         articleAdvancedService.deleteArticle(articleId);

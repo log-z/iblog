@@ -41,16 +41,16 @@ public class UserRestController {
     private static final String DATA_PROPERTY_RANGE = "range";
 
     private final UserAdvancedService userAdvancedService;
-    private final ConversionService restConversionService;
+    private final ConversionService entity2VOConversionService;
     private final Validator passwordAgainValidator;
 
     public UserRestController(
             UserAdvancedService userAdvancedService,
-            @Qualifier("restConverterService") ConversionService restConversionService,
+            @Qualifier("entity2VOConversionService") ConversionService entity2VOConversionService,
             PasswordAgainValidator passwordAgainValidator
     ) {
         this.userAdvancedService = userAdvancedService;
-        this.restConversionService = restConversionService;
+        this.entity2VOConversionService = entity2VOConversionService;
         this.passwordAgainValidator = passwordAgainValidator;
     }
 
@@ -79,7 +79,7 @@ public class UserRestController {
             @RequestAttribute(REQUEST_KEY_CURRENT_USER) User user,
             @ModelAttribute RestResult result
     ) {
-        RestUser restUser = restConversionService.convert(user, RestUser.class);
+        RestUser restUser = entity2VOConversionService.convert(user, RestUser.class);
         return result.setDataProperty(DATA_PROPERTY_USER_INFO, restUser);
     }
 
@@ -167,14 +167,14 @@ public class UserRestController {
             return result.setErrors(errors);
         }
 
-        RestRange restRange = restConversionService.convert(range, RestRange.class);
+        RestRange restRange = entity2VOConversionService.convert(range, RestRange.class);
         assert restRange != null;
         restRange.setTotal(userAdvancedService.getUsersCount());
 
         List<User> users = userAdvancedService.getUsers(range);
         List<RestUser> restUsers = users.stream()
                 .map(u -> {
-                    RestUser ru = restConversionService.convert(u, RestUser.class);
+                    RestUser ru = entity2VOConversionService.convert(u, RestUser.class);
                     if (ru == null) ru = new RestUser();
                     return ru;
                 }).collect(Collectors.toUnmodifiableList());

@@ -3,7 +3,9 @@ package com.log.blog.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.log.blog.dto.ArticleParam;
 import com.log.blog.dto.ValidatorGroup;
+import com.log.blog.entity.Article;
 import com.log.blog.service.ArticleService;
+import com.log.blog.utils.ConversionUtils;
 import com.log.blog.vo.ArticleVO;
 import com.log.blog.vo.PageVO;
 import com.log.blog.vo.RestResult;
@@ -29,12 +31,14 @@ public class ArticlePublicRestController {
     private static final String DATA_PROPERTY_RANGE = "range";
 
     private final ArticleService articleService;
-    private final ConversionService restConversionService;
+    private final ConversionService entity2VOConversionService;
 
-    public ArticlePublicRestController(@Qualifier("articleBasicService") ArticleService articleService,
-                                       @Qualifier("restConverterService") ConversionService restConversionService) {
+    public ArticlePublicRestController(
+            @Qualifier("articleBasicService") ArticleService articleService,
+            @Qualifier("entity2VOConversionService") ConversionService entity2VOConversionService
+    ) {
         this.articleService = articleService;
-        this.restConversionService = restConversionService;
+        this.entity2VOConversionService = entity2VOConversionService;
     }
 
     @GetMapping("/{articleId:[A-Za-z\\d]{32}}")
@@ -44,11 +48,12 @@ public class ArticlePublicRestController {
             @ModelAttribute RestResult result,
             HttpServletRequest request
     ) throws NoHandlerFoundException {
-        ArticleVO article = articleService.getArticle(articleId);
+        Article article = articleService.getArticle(articleId);
+        final ArticleVO articleVO = entity2VOConversionService.convert(article, ArticleVO.class);
         if (article == null)
             throw new NoHandlerFoundException("GET", request.getRequestURI(), new HttpHeaders());
 
-        return result.setDataProperty(DATA_PROPERTY_ARTICLE_INFO, article);
+        return result.setDataProperty(DATA_PROPERTY_ARTICLE_INFO, articleVO);
     }
 
     @GetMapping("/list")
@@ -64,9 +69,10 @@ public class ArticlePublicRestController {
             return result.setErrors(errors);
         }
 
-        List<ArticleVO> articles = articleService.listArticles(feature);
-        PageVO pageVO = restConversionService.convert(articles, PageVO.class);
+        List<Article> articles = articleService.listArticles(feature);
+        List<ArticleVO> articleVOList = ConversionUtils.convertList(entity2VOConversionService, articles, ArticleVO.class);
+        PageVO pageVO = entity2VOConversionService.convert(articles, PageVO.class);
         return result.setDataProperty(DATA_PROPERTY_RANGE, pageVO)
-                .setDataProperty(DATA_PROPERTY_ARTICLE_LIST, articles);
+                .setDataProperty(DATA_PROPERTY_ARTICLE_LIST, articleVOList);
     }
 }

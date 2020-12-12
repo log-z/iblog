@@ -1,12 +1,13 @@
 package com.log.blog.controller;
 
-import com.github.pagehelper.Page;
 import com.log.blog.dto.ArticleParam;
 import com.log.blog.dto.PageRange;
 import com.log.blog.dto.ValidatorGroup;
+import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
+import com.log.blog.utils.ConversionUtils;
 import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.vo.ArticleVO;
 import com.log.blog.vo.PageVO;
@@ -32,14 +33,14 @@ import java.util.List;
 public class ArticlePublicController {
     private final ArticleService articleService;
     private final UserService userService;
-    private final ConversionService conversionService;
+    private final ConversionService entity2VOConversionService;
 
     public ArticlePublicController(@Qualifier("articleBasicService") ArticleService articleService,
                                    @Qualifier("userBasicService") UserService userService,
-                                   @Qualifier("restConverterService") ConversionService conversionService) {
+                                   @Qualifier("entity2VOConversionService") ConversionService entity2VOConversionService) {
         this.articleService = articleService;
         this.userService = userService;
-        this.conversionService = conversionService;
+        this.entity2VOConversionService = entity2VOConversionService;
     }
 
     @GetMapping("/")
@@ -54,12 +55,11 @@ public class ArticlePublicController {
 
         ArticleParam feature = new ArticleParam();
         feature.setPageRange(pageRange);
-        List<ArticleVO> articles = articleService.listArticles(feature);
-        Page<?> page = (Page<?>) articles;
+        List<Article> articles = articleService.listArticles(feature);
+        List<ArticleVO> articleVOList = ConversionUtils.convertList(entity2VOConversionService, articles, ArticleVO.class);
 
-        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
-        model.addAttribute("articlesCount", page.getTotal());
-        model.addAttribute("range", conversionService.convert(page, PageVO.class));
+        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articleVOList));
+        model.addAttribute("range", entity2VOConversionService.convert(articles, PageVO.class));
         return "article-search.jsp";
     }
 
@@ -82,22 +82,23 @@ public class ArticlePublicController {
         feature.setContent(keyword);
         feature.setPageRange(pageRange);
         feature.setFuzzySearch(true);
-        List<ArticleVO> articles = articleService.listArticles(feature);
-        Page<?> page = (Page<?>) articles;
+        List<Article> articles = articleService.listArticles(feature);
+        List<ArticleVO> articleVOList = ConversionUtils.convertList(entity2VOConversionService, articles, ArticleVO.class);
 
-        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articles));
+        model.addAttribute("articles", HtmlEscapeUtils.escapeArticles(articleVOList));
         model.addAttribute("keyword", HtmlEscapeUtils.escape(keyword));
-        model.addAttribute("articlesCount", page.getTotal());
-        model.addAttribute("range", conversionService.convert(page, PageVO.class));
+        model.addAttribute("range", entity2VOConversionService.convert(articles, PageVO.class));
         return "article-search.jsp";
     }
 
     @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
     public String article(@PathVariable String articleId, Model model) {
-        ArticleVO articleVO = articleService.getArticle(articleId);
-        if (articleVO == null)
+        Article article = articleService.getArticle(articleId);
+        if (article == null)
             return null;
 
+        ArticleVO articleVO = entity2VOConversionService.convert(article, ArticleVO.class);
+        assert articleVO != null;
         User user = userService.getUser(articleVO.getAuthorId());
         model.addAttribute("article", HtmlEscapeUtils.escape(articleVO));
         model.addAttribute("author", HtmlEscapeUtils.escape(user));

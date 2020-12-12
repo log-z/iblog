@@ -21,17 +21,14 @@ public class ArticleAdvancedServiceImpl extends ArticleServiceImpl implements Ar
     private static final Set<String> SUPPORT_IMAGE_EXTENSIONS = Set.of("jpg", "png");
 
     private final ArticleMapper articleMapper;
-    private final String uploadRootPath;
     private final String imagesDir;
 
     private static final Logger logger = LoggerFactory.getLogger(ArticleAdvancedServiceImpl.class);
 
     public ArticleAdvancedServiceImpl(ArticleMapper articleMapper,
-                     @Value("${upload.rootPath}") String uploadRootPath,
                      @Value("${upload.article.images}") String imagesDir) {
-        super(articleMapper, uploadRootPath, imagesDir);
+        super(articleMapper, imagesDir);
         this.articleMapper = articleMapper;
-        this.uploadRootPath = uploadRootPath;
         this.imagesDir = imagesDir;
     }
 
@@ -73,7 +70,7 @@ public class ArticleAdvancedServiceImpl extends ArticleServiceImpl implements Ar
             return null;
 
         fileName = createId() + "." + ext;
-        String path = uploadRootPath + imagesDir + fileName;
+        String path = imagesDir + fileName;
         File file = new File(path);
         try {
             if (!file.exists() && !file.createNewFile())

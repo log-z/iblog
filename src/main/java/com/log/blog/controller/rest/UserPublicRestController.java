@@ -35,7 +35,7 @@ public class UserPublicRestController {
 
     public UserPublicRestController(
             @Qualifier("userBasicService") UserService userService,
-            @Qualifier("restConverterService") ConversionService restConversionService,
+            @Qualifier("entity2VOConversionService") ConversionService restConversionService,
             PasswordAgainValidator passwordAgainValidator
     ) {
         this.userService = userService;

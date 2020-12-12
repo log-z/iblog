@@ -3,12 +3,12 @@
 
 <mapper namespace="com.log.blog.mapper.ArticleMapper">
 
-    <resultMap id="articleResultMap" type="com.log.blog.vo.ArticleVO">
+    <resultMap id="articleResultMap" type="com.log.blog.entity.Article">
         <id property="articleId" column="article_id" />
         <result property="authorId" column="author_id" />
         <result property="title" column="title" />
         <result property="content" column="content" />
-        <result property="imageName" column="image" />
+        <result property="image" column="image" />
         <result property="createTime" column="create_time" />
     </resultMap>
 
@@ -65,16 +65,18 @@
     </insert>
 
     <update id="updateArticle">
-        update article set article_id=article_id
-        <if test="article.title != null">
-            , title=#{article.title}
-        </if>
-        <if test="article.content != null">
-            , content=#{article.content}
-        </if>
-        <if test="article.imageName != null">
-            , image=#{article.imageName}
-        </if>
+        update article
+        <set>
+            <if test="article.title != null">
+                title=#{article.title},
+            </if>
+            <if test="article.content != null">
+                content=#{article.content},
+            </if>
+            <if test="article.imageName != null">
+                image=#{article.imageName},
+            </if>
+        </set>
         where article_id=#{article.articleId};
     </update>
 
