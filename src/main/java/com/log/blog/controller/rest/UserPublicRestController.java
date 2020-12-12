@@ -1,12 +1,12 @@
 package com.log.blog.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.log.blog.dto.UserRegisterForm;
+import com.log.blog.dto.UserParam;
 import com.log.blog.entity.User;
 import com.log.blog.service.UserService;
 import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.RestResult;
-import com.log.blog.vo.RestUser;
+import com.log.blog.vo.UserVO;
 import com.log.blog.vo.View;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
@@ -46,18 +46,18 @@ public class UserPublicRestController {
     @PostMapping
     @JsonView(View.Guest.class)
     public RestResult register(
-            @Validated(User.Register.class) UserRegisterForm form,
+            @Validated(UserParam.Register.class) UserParam userParam,
             BindingResult errors,
             @ModelAttribute RestResult result,
             HttpServletResponse response) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(form, errors);
+            passwordAgainValidator.validate(userParam, errors);
         }
-        if (!errors.hasErrors() && userService.register(form)) {
-            response.setStatus(201);
+        if (!errors.hasErrors() && userService.register(userParam)) {
+            response.setStatus(HttpStatus.CREATED.value());
             return result.setDateMessage("register.successful", null);
         } else {
-            response.setStatus(400);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             errors.reject("register.failed");
             return result.setErrors(errors);
         }
@@ -66,21 +66,21 @@ public class UserPublicRestController {
     @PostMapping("/session")
     @JsonView(View.Guest.class)
     public RestResult login(
-            @Validated(User.Login.class) User user,
+            @Validated(UserParam.Login.class) UserParam userParam,
             BindingResult errors,
             HttpSession session,
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
         if (!errors.hasErrors()) {
-            String userId = userService.loginCheck(user);
+            String userId = userService.loginCheck(userParam);
             if (userId != null) {
-                response.setStatus(201);
+                response.setStatus(HttpStatus.CREATED.value());
                 session.setAttribute(SESSION_KEY_USER_IDENTITY, userId);
                 return result.setDateMessage("login.successful", null);
             }
         }
-        response.setStatus(400);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
         errors.reject("login.failed");
         return result.setErrors(errors);
     }
@@ -96,8 +96,8 @@ public class UserPublicRestController {
         if (user == null)
             throw new NoHandlerFoundException("GET", request.getRequestURI(), new HttpHeaders());
 
-        RestUser restUser = restConversionService.convert(user, RestUser.class);
-        return result.setDataProperty(DATA_PROPERTY_USER_INFO, restUser);
+        UserVO userVO = restConversionService.convert(user, UserVO.class);
+        return result.setDataProperty(DATA_PROPERTY_USER_INFO, userVO);
     }
 
     @RequestMapping("/error401")

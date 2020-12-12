@@ -10,19 +10,43 @@
     </resultMap>
 
     <select id="getUserById" resultMap="userResultMap">
-        select * from user where user_id=#{id};
+        select * from user where user_id=#{id}
     </select>
 
     <select id="getUserByEmail" resultMap="userResultMap">
-        select * from user where user_email=#{email};
+        select * from user where user_email=#{email}
     </select>
 
-    <select id="getAllUsers" resultMap="userResultMap">
-        select * from user limit #{range.offset},#{range.num};
+    <select id="listUsers" resultMap="userResultMap">
+        select user_id, user_name, user_email, user_password
+        from user
+        <where>
+            <if test="user.id != null">
+                and user_id=#{user.id}
+            </if>
+            <if test="user.userName != null">
+                and user_name like concat('%', #{user.userName}, '%')
+            </if>
+            <if test="user.userEmail != null">
+                and user_email like concat('%', #{user.userEmail}, '%')
+            </if>
+        </where>
     </select>
 
-    <select id="getUsersCount" resultType="java.lang.Long">
-        select count(user_id) from user;
+    <select id="findUsers" resultMap="userResultMap">
+        select user_id, user_name, user_email, user_password
+        from user
+        <where>
+            <if test="user.id != null">
+                or user_id=#{user.id}
+            </if>
+            <if test="user.userName != null">
+                or user_name like concat('%', #{user.userName}, '%')
+            </if>
+            <if test="user.userEmail != null">
+                or user_email like concat('%', #{user.userEmail}, '%')
+            </if>
+        </where>
     </select>
 
     <insert id="insertUser">
@@ -31,21 +55,23 @@
     </insert>
 
     <update id="updateUser">
-        update user set user_id=user_id
-        <if test="user.userName != null">
-            , user_name=#{user.userName}
-        </if>
-        <if test="user.userEmail != null">
-            , user_email=#{user.userEmail}
-        </if>
-        <if test="user.userPassword != null">
-            , user_password=#{user.userPassword}
-        </if>
-        where user_id=#{user.userId};
+        update user
+        <set>
+            <if test="user.userName != null">
+                user_name=#{user.userName},
+            </if>
+            <if test="user.userEmail != null">
+                user_email=#{user.userEmail},
+            </if>
+            <if test="user.userPassword != null">
+                user_password=#{user.userPassword},
+            </if>
+        </set>
+        where user_id=#{user.userId}
     </update>
 
     <delete id="deleteUser">
-        delete from user where user_id=#{userId};
+        delete from user where user_id=#{userId}
     </delete>
 
 </mapper>

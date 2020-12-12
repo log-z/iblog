@@ -2,7 +2,7 @@ package com.log.blog.validator;
 
 import com.log.blog.dto.AdminRegisterForm;
 import com.log.blog.dto.PasswordForm;
-import com.log.blog.dto.UserRegisterForm;
+import com.log.blog.dto.UserParam;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -17,7 +17,7 @@ import java.util.Objects;
 public class PasswordAgainValidator implements Validator {
     private static final String ERROR_CODE = "passwordAgain.inconsistent";
     private static final List<Class<?>> SUPPORT_CLASS = List.of(
-            AdminRegisterForm.class, UserRegisterForm.class, PasswordForm.class
+            AdminRegisterForm.class, UserParam.class, PasswordForm.class
     );
 
     @Override
@@ -33,8 +33,8 @@ public class PasswordAgainValidator implements Validator {
             if (!Objects.equals(form.getAdminPassword(), form.getAdminPasswordAgain())) {
                 errors.rejectValue("adminPasswordAgain", ERROR_CODE);
             }
-        } else if (target instanceof UserRegisterForm) {
-            UserRegisterForm form = (UserRegisterForm) target;
+        } else if (target instanceof UserParam) {
+            UserParam form = (UserParam) target;
             // userPassword == userPasswordAgain ?
             if (!Objects.equals(form.getUserPassword(), form.getUserPasswordAgain())) {
                 errors.rejectValue("userPasswordAgain", ERROR_CODE);

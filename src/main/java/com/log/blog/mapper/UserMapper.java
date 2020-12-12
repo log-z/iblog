@@ -1,26 +1,25 @@
 package com.log.blog.mapper;
 
-import com.log.blog.dto.Range;
+import com.log.blog.dto.UserParam;
 import com.log.blog.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Mapper
 public interface UserMapper {
-    User getUserById(@Param("id") String id) throws SQLException;
+    User getUserById(@Param("id") String id);
 
-    User getUserByEmail(@Param("email") String email) throws SQLException;
+    User getUserByEmail(@Param("email") String email);
 
-    List<User> getAllUsers(@Param("range") Range range) throws SQLException;
+    List<User> listUsers(@Param("user") UserParam userParam);
 
-    long getUsersCount() throws SQLException;
+    List<User> findUsers(@Param("user") UserParam userParam);
 
-    void insertUser(@Param("user") User user) throws SQLException;
+    boolean insertUser(@Param("user") UserParam userParam);
 
-    void updateUser(@Param("user") User user) throws SQLException;
+    boolean updateUser(@Param("user") UserParam feature);
 
-    void deleteUser(@Param("userId") String userId) throws SQLException;
+    boolean deleteUser(@Param("userId") String userId);
 }

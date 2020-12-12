@@ -1,7 +1,6 @@
 package com.log.blog.controller;
 
 import com.log.blog.dto.Range;
-import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.service.UserAdvancedService;
@@ -36,19 +35,19 @@ public class AdminController {
         return "admin-portal.jsp";
     }
 
-    @GetMapping("/users")
-    public String showUsers(
-            @RequestParam(required = false) Integer num,
-            @RequestParam(required = false) Integer offset,
-            Model model
-    ) {
-        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
-        List<User> users = userAdvancedService.getUsers(range);
-        model.addAttribute("users", HtmlEscapeUtils.escapeUsers(users));
-        model.addAttribute("usersCount", userAdvancedService.getUsersCount());
-        model.addAttribute("range", range);
-        return "admin-show-users.jsp";
-    }
+//    @GetMapping("/users")
+//    public String showUsers(
+//            @RequestParam(required = false) Integer num,
+//            @RequestParam(required = false) Integer offset,
+//            Model model
+//    ) {
+//        Range range = new Range(num, LIST_ITEM_NUMBER, offset, 0);
+//        List<User> users = userAdvancedService.listUsers(range);
+//        model.addAttribute("users", HtmlEscapeUtils.escapeUsers(users));
+//        model.addAttribute("usersCount", userAdvancedService.getUsersCount());
+//        model.addAttribute("range", range);
+//        return "admin-show-users.jsp";
+//    }
 
 //    @GetMapping("/articles")
 //    public String showArticles(

@@ -1,31 +1,15 @@
 package com.log.blog.entity;
 
-import com.log.blog.validator.annotation.BasicEmail;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.util.Objects;
 
 public class User {
     private String userId;
 
-    @NotBlank(groups = Register.class)
-    @Pattern(regexp = "[\\w\\u4e00-\\u9fa5\\-]{1,20}", groups = Register.class, message = "{name.invalid}")
     private String userName;
 
-    @NotBlank(groups = {Register.class, Login.class})
-    @BasicEmail(groups = {Register.class, Login.class}, message = "{email.invalid}")
     private String userEmail;
 
-    @NotBlank(groups = {Register.class, Login.class})
-    @Pattern(regexp = "[a-z0-9]{64}", groups = {Register.class, Login.class}, message = "{password.invalid}")
     private String userPassword;
-
-    public interface Login {
-    }
-
-    public interface Register {
-    }
 
     public User() {
     }

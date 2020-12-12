@@ -1,13 +1,13 @@
 package com.log.blog.converter;
 
 import com.log.blog.entity.User;
-import com.log.blog.vo.RestUser;
+import com.log.blog.vo.UserVO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class User2RestUserConverter implements Converter<User, RestUser> {
+public class User2RestUserConverter implements Converter<User, UserVO> {
     private String contextPath = "";
 
     public void setContextPath(@Value("#{servletContext.contextPath}") String contextPath) {
@@ -15,12 +15,12 @@ public class User2RestUserConverter implements Converter<User, RestUser> {
     }
 
     @Override
-    public RestUser convert(User source) {
-        RestUser restUser = new RestUser();
-        restUser.setUserId(source.getUserId());
-        restUser.setUserName(source.getUserName());
-        restUser.setUserEmail(source.getUserEmail());
-        restUser.setUserHomeUrl(contextPath + "/m/user#" + source.getUserId());
-        return restUser;
+    public UserVO convert(User source) {
+        UserVO userVO = new UserVO();
+        userVO.setUserId(source.getUserId());
+        userVO.setUserName(source.getUserName());
+        userVO.setUserEmail(source.getUserEmail());
+        userVO.setUserHomeUrl(contextPath + "/m/user#" + source.getUserId());
+        return userVO;
     }
 }

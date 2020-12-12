@@ -1,10 +1,6 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.Range;
-import com.log.blog.dto.UserRegisterForm;
-import com.log.blog.entity.Article;
 import com.log.blog.entity.User;
-import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
@@ -18,7 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 @Controller
 public class UserPublicController {
@@ -38,52 +33,52 @@ public class UserPublicController {
         this.passwordAgainValidator = passwordAgainValidator;
     }
 
-    @GetMapping("/register")
-    public String register(Model model) {
-        model.addAttribute("userRegisterForm", new UserRegisterForm());
-        return "user-register.jsp";
-    }
-
-    @PostMapping(value = "/register")
-    public String register(
-            @Validated(User.Register.class) UserRegisterForm userRegisterForm,
-            BindingResult errors,
-            Model model
-    ) {
-        if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(userRegisterForm, errors);
-        }
-        if (!errors.hasErrors() && userService.register(userRegisterForm)) {
-            return "redirect:/login";
-        } else {
-            model.addAttribute("userRegisterForm", HtmlEscapeUtils.escape(userRegisterForm));
-            return "user-register.jsp";
-        }
-    }
-
-    @GetMapping("/login")
-    public String login(Model model) {
-        model.addAttribute("user", new User());
-        return "user-login.jsp";
-    }
-
-    @PostMapping("/login")
-    public String login(
-            @Validated(User.Login.class) User user,
-            BindingResult errors,
-            HttpSession session,
-            Model model
-    ) {
-        if (!errors.hasErrors()) {
-            String userId = userService.loginCheck(user);
-            if (userId != null) {
-                session.setAttribute(SESSION_KEY_USER_IDENTITY, userId);
-                return "redirect:/"+ userId;
-            }
-        }
-        model.addAttribute("user", HtmlEscapeUtils.escape(user));
-        return "user-login.jsp";
-    }
+//    @GetMapping("/register")
+//    public String register(Model model) {
+//        model.addAttribute("userRegisterForm", new UserRegisterForm());
+//        return "user-register.jsp";
+//    }
+//
+//    @PostMapping(value = "/register")
+//    public String register(
+//            @Validated(User.Register.class) UserRegisterForm userRegisterForm,
+//            BindingResult errors,
+//            Model model
+//    ) {
+//        if (!errors.hasErrors()) {
+//            passwordAgainValidator.validate(userRegisterForm, errors);
+//        }
+//        if (!errors.hasErrors() && userService.register(userRegisterForm)) {
+//            return "redirect:/login";
+//        } else {
+//            model.addAttribute("userRegisterForm", HtmlEscapeUtils.escape(userRegisterForm));
+//            return "user-register.jsp";
+//        }
+//    }
+//
+//    @GetMapping("/login")
+//    public String login(Model model) {
+//        model.addAttribute("user", new User());
+//        return "user-login.jsp";
+//    }
+//
+//    @PostMapping("/login")
+//    public String login(
+//            @Validated(User.Login.class) User user,
+//            BindingResult errors,
+//            HttpSession session,
+//            Model model
+//    ) {
+//        if (!errors.hasErrors()) {
+//            String userId = userService.loginCheck(user);
+//            if (userId != null) {
+//                session.setAttribute(SESSION_KEY_USER_IDENTITY, userId);
+//                return "redirect:/"+ userId;
+//            }
+//        }
+//        model.addAttribute("user", HtmlEscapeUtils.escape(user));
+//        return "user-login.jsp";
+//    }
 
 //    @GetMapping("/{targetUserId:\\d{1,11}}")
 //    public String home(
