@@ -7,7 +7,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Article2RestArticleConverter implements Converter<Article, ArticleVO> {
+public class Article2VOConverter implements Converter<Article, ArticleVO> {
     private String contextPath = "";
 
     public void setContextPath(@Value("#{servletContext.contextPath}") String contextPath) {

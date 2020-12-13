@@ -1,8 +1,7 @@
 package com.log.blog.controller.rest;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.log.blog.dto.AdminRegisterForm;
-import com.log.blog.entity.Admin;
+import com.log.blog.dto.AdminParam;
 import com.log.blog.service.AdminService;
 import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.RestResult;
@@ -34,19 +33,19 @@ public class AdminPublicRestController {
     @PostMapping
     @JsonView(View.Guest.class)
     public RestResult register(
-            @Validated(Admin.Register.class) AdminRegisterForm form,
+            @Validated(AdminParam.Register.class) AdminParam adminParam,
             BindingResult errors,
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(form, errors);
+            passwordAgainValidator.validate(adminParam, errors);
         }
-        if (!errors.hasErrors() && adminService.register(form)) {
-            response.setStatus(201);
+        if (!errors.hasErrors() && adminService.register(adminParam)) {
+            response.setStatus(HttpStatus.CREATED.value());
             return result.setDateMessage("register.successful", null);
         } else {
-            response.setStatus(400);
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             errors.reject("register.failed");
             return result.setErrors(errors);
         }
@@ -55,27 +54,27 @@ public class AdminPublicRestController {
     @PostMapping("/session")
     @JsonView(View.Guest.class)
     public RestResult login(
-            @Validated(Admin.Login.class) Admin admin,
+            @Validated(AdminParam.Login.class) AdminParam adminParam,
             BindingResult errors,
             HttpSession session,
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
         if (!errors.hasErrors()) {
-            String adminId = adminService.loginCheck(admin);
+            String adminId = adminService.loginCheck(adminParam);
             if (adminId != null) {
                 // 登陆成功
-                response.setStatus(201);
+                response.setStatus(HttpStatus.CREATED.value());
                 session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminId);
                 return result.setDateMessage("login.successful", null);
             } else {
                 // 账号或密码错误
-                response.setStatus(401);
+                response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 return result.setError(null, "login.authorization.failure", null);
             }
         }
         // 表单格式错误
-        response.setStatus(400);
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
         errors.reject("login.failed");
         return result.setErrors(errors);
     }

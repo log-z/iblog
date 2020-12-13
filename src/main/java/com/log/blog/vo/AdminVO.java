@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import java.util.Objects;
 
-public class RestAdmin {
+public class AdminVO {
     @JsonView({View.Owner.class, View.Admin.class})
     private String adminId;
 
@@ -14,7 +14,7 @@ public class RestAdmin {
     @JsonView({View.Owner.class, View.Admin.class})
     private String adminEmail;
 
-    public RestAdmin() {
+    public AdminVO() {
     }
 
     public String getAdminId() {
@@ -45,10 +45,10 @@ public class RestAdmin {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        RestAdmin restAdmin = (RestAdmin) o;
-        return Objects.equals(adminId, restAdmin.adminId) &&
-                Objects.equals(adminName, restAdmin.adminName) &&
-                Objects.equals(adminEmail, restAdmin.adminEmail);
+        AdminVO adminVO = (AdminVO) o;
+        return Objects.equals(adminId, adminVO.adminId) &&
+                Objects.equals(adminName, adminVO.adminName) &&
+                Objects.equals(adminEmail, adminVO.adminEmail);
     }
 
     @Override

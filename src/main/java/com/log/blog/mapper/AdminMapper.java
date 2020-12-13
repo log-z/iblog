@@ -1,24 +1,25 @@
 package com.log.blog.mapper;
 
-import com.log.blog.dto.Range;
+import com.log.blog.dto.AdminParam;
 import com.log.blog.entity.Admin;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @Mapper
 public interface AdminMapper {
-    Admin getAdminById(@Param("id") String id) throws SQLException;
+    Admin getAdminById(@Param("id") String id);
 
-    Admin getAdminByEmail(@Param("email") String email) throws SQLException;
+    Admin getAdminByEmail(@Param("email") String email);
 
-    List<Admin> getAllAdmins(@Param("range") Range range) throws SQLException;
+    List<Admin> listAdmins(@Param("admin") AdminParam adminParam);
 
-    long getAdminsCount() throws SQLException;
+    List<Admin> findAdmins(@Param("admin") AdminParam adminParam);
 
-    void insertAdmin(@Param("admin") Admin admin) throws SQLException;
+    boolean insertAdmin(@Param("admin") AdminParam adminParam);
 
-    void deleteAdmin(@Param("adminId") String adminId) throws SQLException;
+    boolean updateAdmin(@Param("admin") AdminParam adminParam);
+
+    boolean deleteAdmin(@Param("adminId") String adminId);
 }

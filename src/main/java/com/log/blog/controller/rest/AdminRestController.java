@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.log.blog.controller.AdminPublicController;
 import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminAdvancedService;
-import com.log.blog.vo.RestAdmin;
+import com.log.blog.vo.AdminVO;
 import com.log.blog.vo.RestResult;
 import com.log.blog.vo.View;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,8 +43,8 @@ public class AdminRestController {
             @ModelAttribute RestResult result
     ) {
         Admin admin = adminAdvancedService.getAdmin(adminId);
-        RestAdmin restAdmin = entity2VOConversionService.convert(admin, RestAdmin.class);
-        return result.setDataProperty(DATA_PROPERTY_ADMIN_INFO, restAdmin);
+        AdminVO adminVO = entity2VOConversionService.convert(admin, AdminVO.class);
+        return result.setDataProperty(DATA_PROPERTY_ADMIN_INFO, adminVO);
     }
 
     @GetMapping("/{adminId:\\d{0,11}}")
@@ -58,7 +58,7 @@ public class AdminRestController {
         if (admin == null)
             throw new NoHandlerFoundException("GET", request.getRequestURI(), new HttpHeaders());
 
-        RestAdmin restAdmin = entity2VOConversionService.convert(admin, RestAdmin.class);
-        return result.setDataProperty(DATA_PROPERTY_ADMIN_INFO, restAdmin);
+        AdminVO adminVO = entity2VOConversionService.convert(admin, AdminVO.class);
+        return result.setDataProperty(DATA_PROPERTY_ADMIN_INFO, adminVO);
     }
 }

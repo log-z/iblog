@@ -1,7 +1,6 @@
 package com.log.blog.validator;
 
-import com.log.blog.dto.AdminRegisterForm;
-import com.log.blog.dto.PasswordForm;
+import com.log.blog.dto.AdminParam;
 import com.log.blog.dto.UserParam;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -17,7 +16,7 @@ import java.util.Objects;
 public class PasswordAgainValidator implements Validator {
     private static final String ERROR_CODE = "passwordAgain.inconsistent";
     private static final List<Class<?>> SUPPORT_CLASS = List.of(
-            AdminRegisterForm.class, UserParam.class, PasswordForm.class
+            AdminParam.class, UserParam.class
     );
 
     @Override
@@ -27,24 +26,17 @@ public class PasswordAgainValidator implements Validator {
 
     @Override
     public void validate(Object target, Errors errors) {
-        if (target instanceof AdminRegisterForm) {
-            AdminRegisterForm form = (AdminRegisterForm) target;
+        if (target instanceof AdminParam) {
+            AdminParam adminParam = (AdminParam) target;
             // adminPassword == adminPasswordAgain ?
-            if (!Objects.equals(form.getAdminPassword(), form.getAdminPasswordAgain())) {
+            if (!Objects.equals(adminParam.getAdminPassword(), adminParam.getAdminPasswordAgain())) {
                 errors.rejectValue("adminPasswordAgain", ERROR_CODE);
             }
         } else if (target instanceof UserParam) {
-            UserParam form = (UserParam) target;
+            UserParam userParam = (UserParam) target;
             // userPassword == userPasswordAgain ?
-            if (!Objects.equals(form.getUserPassword(), form.getUserPasswordAgain())) {
+            if (!Objects.equals(userParam.getUserPassword(), userParam.getUserPasswordAgain())) {
                 errors.rejectValue("userPasswordAgain", ERROR_CODE);
-            }
-        } else if (target instanceof PasswordForm) {
-            PasswordForm form = (PasswordForm) target;
-            // newPassword == newPasswordAgain ?
-            if (!Objects.equals(form.getNewPassword(), form.getNewPasswordAgain())) {
-                form.setNewPasswordAgain(null);
-                errors.rejectValue("newPasswordAgain", ERROR_CODE);
             }
         }
     }

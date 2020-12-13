@@ -10,19 +10,43 @@
     </resultMap>
 
     <select id="getAdminById" resultMap="adminResultMap">
-        select * from admin where admin_id=#{id};
+        select * from admin where admin_id=#{id}
     </select>
 
     <select id="getAdminByEmail" resultMap="adminResultMap">
-        select * from admin where admin_email=#{email};
+        select * from admin where admin_email=#{email}
     </select>
 
-    <select id="getAllAdmins" resultMap="adminResultMap">
-        select * from admin limit #{range.offset},#{range.num};
+    <select id="listAdmins" resultMap="adminResultMap">
+        select admin_id, admin_name, admin_email, admin_password
+        from admin
+        <where>
+            <if test="admin.adminId != null">
+                and admin_id=#{admin.adminId}
+            </if>
+            <if test="admin.adminName != null">
+                and admin_name like concat('%', #{admin.adminName}, '%')
+            </if>
+            <if test="admin.adminEmail != null">
+                and admin_email like concat('%', #{admin.adminEmail}, '%')
+            </if>
+        </where>
     </select>
 
-    <select id="getAdminsCount" resultType="java.lang.Long">
-        select count(admin_id) from admin;
+    <select id="findAdmins" resultMap="adminResultMap">
+        select admin_id, admin_name, admin_email, admin_password
+        from admin
+        <where>
+            <if test="admin.adminId != null">
+                or admin_id=#{admin.adminId}
+            </if>
+            <if test="admin.adminName != null">
+                or admin_name like concat('%', #{admin.adminName}, '%')
+            </if>
+            <if test="admin.adminEmail != null">
+                or admin_email like concat('%', #{admin.adminEmail}, '%')
+            </if>
+        </where>
     </select>
 
     <insert id="insertAdmin">
@@ -30,8 +54,24 @@
         values (#{admin.adminName}, #{admin.adminEmail}, #{admin.adminPassword})
     </insert>
 
+    <update id="updateAdmin">
+        update admin
+        <set>
+            <if test="admin.adminName != null">
+                admin_name=#{admin.adminName},
+            </if>
+            <if test="admin.adminEmail != null">
+                admin_email=#{admin.adminEmail},
+            </if>
+            <if test="admin.adminPassword != null">
+                admin_password=#{admin.adminPassword},
+            </if>
+        </set>
+        where admin_id=#{admin.adminId}
+    </update>
+
     <delete id="deleteAdmin">
-        delete from admin where admin_id=#{adminId};
+        delete from admin where admin_id=#{adminId}
     </delete>
 
 </mapper>

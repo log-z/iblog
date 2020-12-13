@@ -91,19 +91,19 @@ public class ArticlePublicController {
         return "article-search.jsp";
     }
 
-    @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
-    public String article(@PathVariable String articleId, Model model) {
-        Article article = articleService.getArticle(articleId);
-        if (article == null)
-            return null;
-
-        ArticleVO articleVO = entity2VOConversionService.convert(article, ArticleVO.class);
-        assert articleVO != null;
-        User user = userService.getUser(articleVO.getAuthorId());
-        model.addAttribute("article", HtmlEscapeUtils.escape(articleVO));
-        model.addAttribute("author", HtmlEscapeUtils.escape(user));
-        return "article-content.jsp";
-    }
+//    @GetMapping("/article/{articleId:[A-Za-z\\d]{32}}")
+//    public String article(@PathVariable String articleId, Model model) {
+//        Article article = articleService.getArticle(articleId);
+//        if (article == null)
+//            return null;
+//
+//        ArticleVO articleVO = entity2VOConversionService.convert(article, ArticleVO.class);
+//        assert articleVO != null;
+//        User user = userService.getUser(articleVO.getAuthorId());
+//        model.addAttribute("article", HtmlEscapeUtils.escape(articleVO));
+//        model.addAttribute("author", HtmlEscapeUtils.escape(user));
+//        return "article-content.jsp";
+//    }
 
     @GetMapping("/article/image/{name}.{suffix}")
     public void image(

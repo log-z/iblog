@@ -3,7 +3,6 @@ package com.log.blog.interceptor;
 import com.log.blog.controller.AdminPublicController;
 import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminAdvancedService;
-import com.log.blog.utils.HtmlEscapeUtils;
 import com.log.blog.utils.MappingUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -43,7 +42,7 @@ public class AdminRequiredInterceptor implements HandlerInterceptor {
         if (adminId instanceof String) {
             Admin currentAdmin = adminAdvancedService.getAdmin((String) adminId);
             if (currentAdmin != null) {
-                request.setAttribute("currentAdmin", HtmlEscapeUtils.escape(currentAdmin));
+                request.setAttribute("currentAdmin", currentAdmin);
                 return true;
             }
         }

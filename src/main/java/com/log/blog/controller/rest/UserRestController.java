@@ -100,7 +100,7 @@ public class UserRestController {
             @PathVariable String userId,
             @RequestAttribute(REQUEST_KEY_CURRENT_USER) User user,
             @ModelAttribute RestResult result,
-            @Validated NameForm form,
+            @Validated(UserParam.Rename.class) UserParam userParam,
             BindingResult errors,
             HttpServletResponse response
     ) {
@@ -111,7 +111,7 @@ public class UserRestController {
         }
 
         AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), userId);
-        boolean successful = userAdvancedService.updateName(userId, form.getName());
+        boolean successful = userAdvancedService.updateName(userId, userParam.getUserName());
         if (successful) {
             response.setStatus(HttpStatus.NO_CONTENT.value());
             return null;
@@ -126,15 +126,17 @@ public class UserRestController {
             @PathVariable String userId,
             @RequestAttribute(value = REQUEST_KEY_CURRENT_USER) User user,
             @ModelAttribute RestResult result,
-            @Validated PasswordForm form,
+            @Validated(UserParam.ResetPassword.class) UserParam userParam,
             BindingResult errors,
             HttpServletResponse response
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(form, errors);
+            passwordAgainValidator.validate(userParam, errors);
             if (!errors.hasErrors()) {
                 AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), userId);
-                boolean successful = userAdvancedService.updatePassword(userId, form.getOldPassword(), form.getNewPassword());
+                boolean successful = userAdvancedService.updatePassword(
+                        userId, userParam.getOldUserPassword(), userParam.getUserPassword()
+                );
                 if (successful) {
                     response.setStatus(HttpStatus.NO_CONTENT.value());
                     return null;

@@ -7,7 +7,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class User2RestUserConverter implements Converter<User, UserVO> {
+public class User2VOConverter implements Converter<User, UserVO> {
     private String contextPath = "";
 
     public void setContextPath(@Value("#{servletContext.contextPath}") String contextPath) {

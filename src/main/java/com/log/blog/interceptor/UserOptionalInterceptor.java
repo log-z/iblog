@@ -41,7 +41,7 @@ public class UserOptionalInterceptor implements HandlerInterceptor {
         if (userId instanceof String) {
             User currentUser = userService.getUser((String) userId);
             if (currentUser != null) {
-                request.setAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER, HtmlEscapeUtils.escape(currentUser));
+                request.setAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER, currentUser);
             } else {
                 session.removeAttribute(UserPublicController.SESSION_KEY_USER_IDENTITY);
             }

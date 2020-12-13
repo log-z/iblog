@@ -80,7 +80,7 @@ public class UserPublicRestController {
                 return result.setDateMessage("login.successful", null);
             }
         }
-        response.setStatus(HttpStatus.BAD_REQUEST.value());
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
         errors.reject("login.failed");
         return result.setErrors(errors);
     }

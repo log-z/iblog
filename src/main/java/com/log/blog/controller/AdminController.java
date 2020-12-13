@@ -1,7 +1,5 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.Range;
-import com.log.blog.entity.User;
 import com.log.blog.service.ArticleAdvancedService;
 import com.log.blog.service.UserAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
@@ -10,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")

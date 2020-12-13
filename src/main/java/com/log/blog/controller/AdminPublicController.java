@@ -1,6 +1,6 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.AdminRegisterForm;
+import com.log.blog.dto.AdminParam;
 import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminService;
 import com.log.blog.utils.HtmlEscapeUtils;
@@ -32,26 +32,26 @@ public class AdminPublicController {
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("adminRegisterForm", new AdminRegisterForm());
+        model.addAttribute("adminRegisterForm", new AdminParam());
         return "admin-register.jsp";
     }
 
-    @PostMapping(value = "/register")
-    public String register(
-            @Validated(Admin.Register.class) AdminRegisterForm adminRegisterForm,
-            BindingResult errors,
-            Model model
-    ) {
-        if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(adminRegisterForm, errors);
-        }
-        if (!errors.hasErrors() && adminService.register(adminRegisterForm)) {
-            return "redirect:/admin/login";
-        } else {
-            model.addAttribute("adminRegisterForm", HtmlEscapeUtils.escape(adminRegisterForm));
-            return "admin-register.jsp";
-        }
-    }
+//    @PostMapping(value = "/register")
+//    public String register(
+//            @Validated(Admin.Register.class) AdminParam adminParam,
+//            BindingResult errors,
+//            Model model
+//    ) {
+//        if (!errors.hasErrors()) {
+//            passwordAgainValidator.validate(adminParam, errors);
+//        }
+//        if (!errors.hasErrors() && adminService.register(adminParam)) {
+//            return "redirect:/admin/login";
+//        } else {
+//            model.addAttribute("adminRegisterForm", HtmlEscapeUtils.escape(adminParam));
+//            return "admin-register.jsp";
+//        }
+//    }
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -59,23 +59,23 @@ public class AdminPublicController {
         return "admin-login.jsp";
     }
 
-    @PostMapping("/login")
-    public String login(
-            @Validated(Admin.Login.class) Admin admin,
-            BindingResult errors,
-            HttpSession session,
-            Model model
-    ) {
-        if (!errors.hasErrors()) {
-            String adminId = adminService.loginCheck(admin);
-            if (adminId != null) {
-                session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminId);
-                return "redirect:/admin";
-            }
-        }
-        model.addAttribute("admin", HtmlEscapeUtils.escape(admin));
-        return "admin-login.jsp";
-    }
+//    @PostMapping("/login")
+//    public String login(
+//            @Validated(Admin.Login.class) Admin admin,
+//            BindingResult errors,
+//            HttpSession session,
+//            Model model
+//    ) {
+//        if (!errors.hasErrors()) {
+//            String adminId = adminService.loginCheck(admin);
+//            if (adminId != null) {
+//                session.setAttribute(SESSION_KEY_ADMIN_IDENTITY, adminId);
+//                return "redirect:/admin";
+//            }
+//        }
+//        model.addAttribute("admin", HtmlEscapeUtils.escape(admin));
+//        return "admin-login.jsp";
+//    }
 
     @RequestMapping("/error/401")
     public String error403(Model model) {

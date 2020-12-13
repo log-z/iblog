@@ -1,7 +1,6 @@
 package com.log.blog.controller;
 
-import com.log.blog.dto.NameForm;
-import com.log.blog.dto.PasswordForm;
+import com.log.blog.dto.UserParam;
 import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.UserAdvancedService;
@@ -43,26 +42,26 @@ public class UserController {
         return null;
     }
 
-    @GetMapping("/{userId:\\d{1,11}}/update-name")
-    public String updateName(
-            @PathVariable String userId,
-            @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
-            Model model
-    ) {
-        if (user.getUserId().equals(userId)) {
-            NameForm form = new NameForm();
-            form.setName(user.getUserName());
-            model.addAttribute("form", HtmlEscapeUtils.escape(form));
-            return "user-update-name.jsp";
-        }
-        return null;  // 无权限
-    }
+//    @GetMapping("/{userId:\\d{1,11}}/update-name")
+//    public String updateName(
+//            @PathVariable String userId,
+//            @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
+//            Model model
+//    ) {
+//        if (user.getUserId().equals(userId)) {
+//            UserParam userParam = new UserParam();
+//            userParam.setUserName(user.getUserName());
+//            model.addAttribute("form", HtmlEscapeUtils.escape(userParam));
+//            return "user-update-name.jsp";
+//        }
+//        return null;  // 无权限
+//    }
 
     @PostMapping("/{userId:\\d{1,11}}/update-name")
     public String updateName(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
-            @Validated @ModelAttribute("form") NameForm form,
+            @Validated(UserParam.Rename.class) @ModelAttribute("form") UserParam userParam,
             BindingResult errors,
             Model model
     ) {
@@ -70,7 +69,7 @@ public class UserController {
             if (!user.getUserId().equals(userId)) {
                 return null;  // 无权限
             } else {
-                if (userAdvancedService.updateName(userId, form.getName()))
+                if (userAdvancedService.updateName(userId, userParam.getUserName()))
                     return "redirect:/{userId}/info";
                 model.addAttribute("msg", "修改姓名失败。");
             }
@@ -85,7 +84,7 @@ public class UserController {
             Model model
     ) {
         if (user.getUserId().equals(userId)) {
-            model.addAttribute("form", new PasswordForm());
+            model.addAttribute("form", new UserParam());
             return "user-update-password.jsp";
         }
         return null;  // 无权限
@@ -95,20 +94,21 @@ public class UserController {
     public String updatePassword(
             @PathVariable String userId,
             @RequestAttribute(UserRequiredInterceptor.REQUEST_KEY_CURRENT_USER) User user,
-            @Validated @ModelAttribute("form") PasswordForm form,
+            @Validated(UserParam.ResetPassword.class) @ModelAttribute("form") UserParam userParam,
             BindingResult errors,
             Model model
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(form, errors);
+            passwordAgainValidator.validate(userParam, errors);
             if (!errors.hasErrors()) {
-                if (!user.getUserId().equals(userId)) {
+                if (!user.getUserId().equals(userId))
                     return null;  // 无权限
-                } else {
-                    if (userAdvancedService.updatePassword(userId, form.getOldPassword(), form.getNewPassword()))
-                        return "redirect:/{userId}/info";
-                    model.addAttribute("msg", "修改密码失败。");
+
+                if (userAdvancedService.updatePassword(
+                        userId, userParam.getOldUserPassword(), userParam.getUserPassword())) {
+                    return "redirect:/{userId}/info";
                 }
+                model.addAttribute("msg", "修改密码失败。");
             }
         }
         return "user-update-password.jsp";

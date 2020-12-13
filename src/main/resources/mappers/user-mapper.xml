@@ -21,8 +21,8 @@
         select user_id, user_name, user_email, user_password
         from user
         <where>
-            <if test="user.id != null">
-                and user_id=#{user.id}
+            <if test="user.userId != null">
+                and user_id=#{user.userId}
             </if>
             <if test="user.userName != null">
                 and user_name like concat('%', #{user.userName}, '%')
@@ -37,8 +37,8 @@
         select user_id, user_name, user_email, user_password
         from user
         <where>
-            <if test="user.id != null">
-                or user_id=#{user.id}
+            <if test="user.userId != null">
+                or user_id=#{user.userId}
             </if>
             <if test="user.userName != null">
                 or user_name like concat('%', #{user.userName}, '%')

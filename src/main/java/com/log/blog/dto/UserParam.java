@@ -9,21 +9,26 @@ import javax.validation.constraints.Pattern;
 public class UserParam {
     private String userId;
 
-    @NotBlank(groups = Register.class)
-    @Pattern(regexp = "[\\w\\u4e00-\\u9fa5\\-]{1,20}", groups = Register.class, message = "{name.invalid}")
+    @NotBlank(groups = {Register.class, Rename.class})
+    @Pattern(regexp = "[\\w\\u4e00-\\u9fa5\\-]{1,20}", groups = {Register.class, Rename.class},
+            message = "{name.invalid}")
     private String userName;
 
     @NotBlank(groups = {Register.class, Login.class})
     @BasicEmail(groups = {Register.class, Login.class}, message = "{email.invalid}")
     private String userEmail;
 
-    @NotBlank(groups = {Register.class, Login.class})
+    @NotBlank(groups = {Register.class, Login.class, ResetPassword.class})
     @Pattern(regexp = "[a-z0-9]{64}", groups = {Register.class, Login.class}, message = "{password.invalid}")
     private String userPassword;
 
-    @NotBlank(groups = Register.class)
-    @Pattern(regexp = "[a-z0-9]{64}", groups = Register.class, message = "{password.invalid}")
+    @NotBlank(groups = {Register.class, ResetPassword.class})
+    @Pattern(regexp = "[a-z0-9]{64}", groups = {Register.class, ResetPassword.class}, message = "{password.invalid}")
     private String userPasswordAgain;
+
+    @NotBlank(groups = ResetPassword.class)
+    @Pattern(regexp = "[a-z0-9]{64}", groups = ResetPassword.class, message = "{password.invalid}")
+    private String oldUserPassword;
 
     private boolean fuzzySearch = false;
 
@@ -36,8 +41,13 @@ public class UserParam {
     public interface Register {
     }
 
-    public UserParam() {
+    public interface Rename {
     }
+
+    public interface ResetPassword {
+    }
+
+    public UserParam() { }
 
     public String getUserId() {
         return userId;
@@ -77,6 +87,14 @@ public class UserParam {
 
     public void setUserPasswordAgain(String userPasswordAgain) {
         this.userPasswordAgain = userPasswordAgain;
+    }
+
+    public String getOldUserPassword() {
+        return oldUserPassword;
+    }
+
+    public void setOldUserPassword(String oldUserPassword) {
+        this.oldUserPassword = oldUserPassword;
     }
 
     public boolean isFuzzySearch() {
