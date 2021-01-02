@@ -33,7 +33,7 @@ import static com.log.blog.interceptor.UserRequiredInterceptor.REQUEST_KEY_CURRE
 public class UserRestController {
     private static final String DATA_PROPERTY_USER_INFO = "user";
     private static final String DATA_PROPERTY_USER_LIST = "users";
-    private static final String DATA_PROPERTY_RANGE = "range";
+    private static final String DATA_PROPERTY_PAGE_RANGE = "pageRange";
 
     private final UserAdvancedService userAdvancedService;
     private final ConversionService entity2VOConversionService;
@@ -168,7 +168,7 @@ public class UserRestController {
         List<UserVO> userVOList = ConversionUtils.convertList(entity2VOConversionService, users, UserVO.class);
         PageVO pageVO = entity2VOConversionService.convert(users, PageVO.class);
 
-        return result.setDataProperty(DATA_PROPERTY_RANGE, pageVO)
+        return result.setDataProperty(DATA_PROPERTY_PAGE_RANGE, pageVO)
                 .setDataProperty(DATA_PROPERTY_USER_LIST, userVOList);
     }
 

@@ -30,24 +30,16 @@
                 return {
                     listApiUrl: '/api/user/list$admin',
                     supportOptions: ['view', 'delete'],
-                    defaultRange: {
-                        num: 20,
-                        offset: 0,
-                    },
                 }
             },
             components: {
                 'user-list': UserList
             },
             template: `
-                <user-list ref="userList" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-bind:list-api="listApiUrl" v-on:range-update="rangeUpdate">
+                <user-list :support-options="supportOptions" :page-range="pageRange" :base-url="listApiUrl"
+                           :refresh="refreshTime" @range-update="pageRangeUpdate">
                 </user-list>
             `,
-            computed: {
-                page: function () {
-                    return this.$refs.userList;
-                }
-            }
         }
 
         let router = new VueRouter({

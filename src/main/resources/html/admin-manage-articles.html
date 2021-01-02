@@ -30,24 +30,16 @@
                 return {
                     fields: [ 'id', 'title', 'createTime', 'options' ],
                     supportOptions: ['view', 'delete'],
-                    defaultRange: {
-                        num: 20,
-                        offset: 0,
-                    },
                 }
             },
             components: {
                 'article-list': ArticleList
             },
             template: `
-                <article-list ref="articleList" v-bind:fields="fields" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-on:range-update="rangeUpdate">
+                <article-list :fields="fields" :support-options="supportOptions" :page-range="pageRange"
+                              :refresh="refreshTime" @range-update="pageRangeUpdate">
                 </article-list>
             `,
-            computed: {
-                page: function () {
-                    return this.$refs.articleList;
-                }
-            }
         }
 
         let router = new VueRouter({

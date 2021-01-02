@@ -7,9 +7,9 @@
 <body>
     <div id="user_home">
         <h1>用户主页 - {{targetUser.userName}}</h1>
-        <user-header v-bind:user="currentUser"></user-header>
+        <user-header :user="currentUser"></user-header>
 
-        <router-view v-bind:is-me="isMe" v-on:author-update="reloadTargetUserInfo"></router-view>
+        <router-view :is-me="isMe" @switch-author="reloadTargetUserInfo"></router-view>
     </div>
 
 
@@ -25,14 +25,24 @@
 
         const UserArticleListWrapper = {
             mixins: [ UserArticleListRouteMixin ],
-            props: [ 'isMe' ],
+            props: {
+                isMe: {
+                    type: Boolean,
+                    default: function () {
+                        return false;
+                    }
+                }
+            },
             data: function () {
                 return {
                     fields: [ 'title', 'createTime', 'options' ],
-                    supportOptions: [ 'view' ],
-                    defaultRange: {
-                        num: 10,
-                        offset: 0,
+                    requestParam: {
+                        articleId: null,
+                        authorId: null,
+                        title: null,
+                        content: null,
+                        createTime: null,
+                        fuzzySearch: null,
                     },
                 }
             },
@@ -40,23 +50,17 @@
                 'article-list': ArticleList
             },
             template: `
-                <article-list ref="articleList" v-bind:fields="fields" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-on:range-update="rangeUpdate">
+                <article-list :fields="fields" :support-options="supportOptions" :page-range="pageRange"
+                              :request-param="requestParam" :refresh="refreshTime" @range-update="pageRangeUpdate">
                 </article-list>
             `,
             computed: {
-                page: function () {
-                    return this.$refs.articleList;
+                supportOptions: function () {
+                    if (this.isMe)
+                        return [ 'view', 'edit' ];
+                    return [ 'view' ];
                 }
             },
-            watch: {
-                isMe: function (value) {
-                    if (value) {
-                        this.supportOptions = [ 'view', 'edit' ]
-                    } else {
-                        this.supportOptions = [ 'view' ]
-                    }
-                }
-            }
         }
 
         let router = new VueRouter({

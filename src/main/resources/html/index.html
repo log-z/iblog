@@ -7,10 +7,10 @@
 <body>
     <div id="home">
         <h1>iBlog</h1>
-        <user-header v-bind:user="currentUser"></user-header>
+        <user-header :user="currentUser"></user-header>
 
         <div id="article_list">
-            <form v-on:submit.prevent="search">
+            <form @submit.prevent="search">
                 <input type="submit" value="搜索">
                 <input type="text" v-model="keyword">
             </form>
@@ -27,17 +27,20 @@
     <script type="module">
         import UserHeader from '/static/js/component/user-header.js'
         import ArticleList from '/static/js/component/article-list.js'
-        import ArticleListRouteMixin from '/static/js/mixin/article-list-route-mixin.js'
+        import MultipageRouteMixin from '/static/js/mixin/multipage-route-mixin.js'
 
         const ArticleListWrapper = {
-            mixins: [ ArticleListRouteMixin ],
+            mixins: [ MultipageRouteMixin ],
             data: function () {
                 return {
                     fields: [ 'title', 'createTime', 'options' ],
-                    supportOptions: [ 'view' ],
-                    defaultRange: {
-                        num: 10,
-                        offset: 0,
+                    requestParam: {
+                        articleId: null,
+                        authorId: null,
+                        title: null,
+                        content: null,
+                        createTime: null,
+                        fuzzySearch: null,
                     },
                 }
             },
@@ -45,14 +48,10 @@
                 'article-list': ArticleList
             },
             template: `
-                <article-list ref="articleList" v-bind:fields="fields" v-bind:support-options="supportOptions" v-bind:default-range="defaultRange" v-on:range-update="rangeUpdate">
+                <article-list :fields="fields" :page-range="pageRange" :request-param="requestParam"
+                              :refresh="refreshTime" @range-update="pageRangeUpdate">
                 </article-list>
             `,
-            computed: {
-                page: function () {
-                    return this.$refs.articleList;
-                }
-            },
         }
 
         let router = new VueRouter({
@@ -97,7 +96,13 @@
                 },
                 search: function () {
                     let query = { }
-                    if (this.keyword) query.keyword = this.keyword;
+                    if (this.keyword) {
+                        query.title = this.keyword;
+                        query.content = this.keyword;
+                        query.fuzzySearch = true;
+                        query.pageNum = null;
+                        query.pageSize = null;
+                    }
 
                     this.$router.push({
                         path: this.$route.path,

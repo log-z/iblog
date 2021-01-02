@@ -28,7 +28,7 @@ import java.util.List;
 public class ArticlePublicRestController {
     private static final String DATA_PROPERTY_ARTICLE_INFO = "article";
     private static final String DATA_PROPERTY_ARTICLE_LIST = "articles";
-    private static final String DATA_PROPERTY_RANGE = "range";
+    private static final String DATA_PROPERTY_PAGE_RANGE = "pageRange";
 
     private final ArticleService articleService;
     private final ConversionService entity2VOConversionService;
@@ -72,7 +72,7 @@ public class ArticlePublicRestController {
         List<Article> articles = articleService.listArticles(feature);
         List<ArticleVO> articleVOList = ConversionUtils.convertList(entity2VOConversionService, articles, ArticleVO.class);
         PageVO pageVO = entity2VOConversionService.convert(articles, PageVO.class);
-        return result.setDataProperty(DATA_PROPERTY_RANGE, pageVO)
+        return result.setDataProperty(DATA_PROPERTY_PAGE_RANGE, pageVO)
                 .setDataProperty(DATA_PROPERTY_ARTICLE_LIST, articleVOList);
     }
 }

@@ -4,17 +4,60 @@ export default {
     components: {
         pagination: Pagination
     },
-    props: [ 'fields', 'supportOptions', 'defaultRange' ],
+    props: {
+        baseUrl: {
+            type: String,
+            default: function () {
+                return '/api/article/list';
+            },
+        },
+        fields: {
+            type: Array,
+            default: function () {
+                return ['title', 'createTime'];
+            }
+        },
+        supportOptions: {
+            type: Array,
+            default: function () {
+                return ['view'];
+            },
+        },
+        requestParam: {
+            type: Object,
+            default: function() {
+                return {
+                    articleId: null,
+                    authorId: null,
+                    title: null,
+                    content: null,
+                    createTime: null,
+                    fuzzySearch: null,
+                }
+            },
+        },
+        pageRange: {
+            type: Object,
+            default: function() {
+                return {
+                    pageNum: null,
+                    pageSize: null,
+                }
+            },
+        },
+        refresh: {
+            type: Number,
+            default: null,
+        },
+    },
     data: function() {
         return {
-            listApiUrl: '/api/article/list',
             message: null,
-            articles: null,
-            keyword: null,
-            feature: { },
-            range: {
-                num: null,
-                offset: null,
+            articles: [],
+            resPageRange: {
+                pageNum: null,
+                pages: null,
+                pageSize: null,
                 total: null,
             },
         }
@@ -57,13 +100,13 @@ export default {
                             <td v-if="fieldTitleEnable">{{article.title}}</td>
                             <td v-if="fieldCreateTimeEnable">{{article.createTime}}</td>
                             <td v-if="fieldOptionsEnable">
-                                <a v-if="viewable" v-bind:href="articleViewUrl(article.articleId)">[查看]</a>
-                                <a v-if="editable" v-bind:href="articleEditUrl(article.articleId)">[编辑]</a>
-                                <a v-if="deletable" href="#" v-on:click.prevent="deleteArticle(article.articleId)">[删除]</a>
+                                <a v-if="viewable" :href="articleViewUrl(article.articleId)">[查看]</a>
+                                <a v-if="editable" :href="articleEditUrl(article.articleId)">[编辑]</a>
+                                <a v-if="deletable" href="#" @click.prevent="deleteArticle(article.articleId)">[删除]</a>
                             </td>
                         </tr>
                     </table>
-                    <pagination v-bind:range="range" v-on:updated="rangeUpdate"></pagination>
+                    <pagination :page-range="resPageRange" @updated="rangeUpdate"></pagination>
                 </div>
             `,
     methods: {
@@ -76,17 +119,17 @@ export default {
         articleDeleteUrl: function(articleId) {
             return '/api/article/' + articleId
         },
-        init: function() {
-            this.range.num = this.defaultRange.num;
-            this.range.offset = this.defaultRange.offset;
-        },
         reload: function () {
-            this.$axios.get(this.listApiUrl, {
-                params: Object.assign({ keyword: this.keyword }, this.range, this.feature),
+            this.$axios.get(this.baseUrl, {
+                params: {
+                    ...this.requestParam,
+                    'pageRange.pageNum': this.pageRange.pageNum,
+                    'pageRange.pageSize': this.pageRange.pageSize,
+                },
             }).then(response => {
                 if (response.status === 200) {
                     this.articles = response.data.data.articles;
-                    this.range = response.data.data.range;
+                    this.resPageRange = response.data.data.pageRange;
                 }
             })
         },
@@ -103,8 +146,13 @@ export default {
                 this.message = error.response.data.errors.message;
             })
         },
-        rangeUpdate: function () {
-            this.$emit('range-update')
+        rangeUpdate: function (pageNum) {
+            this.$emit('range-update', pageNum, this.pageRange.pageSize)
+        },
+    },
+    watch: {
+        refresh: function() {
+            this.reload();
         },
     },
 }
