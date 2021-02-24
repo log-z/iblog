@@ -7,8 +7,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-@ScriptAssert(groups = {UserParam.Register.class, UserParam.ResetPassword.class}, lang = "jexl",
-        script = "_.userPassword eq _.userPasswordAgain", alias = "_", reportOn = "userPasswordAgain",
+@ScriptAssert(groups = {UserParam.Register.class, UserParam.ResetPassword.class}, lang = "javascript",
+        script = "_.userPassword == _.userPasswordAgain", alias = "_", reportOn = "userPasswordAgain",
         message = "{passwordAgain.inconsistent}")
 public class UserParam {
 
