@@ -3,13 +3,11 @@ package com.log.blog.controller.rest;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.log.blog.dto.AdminParam;
 import com.log.blog.service.AdminService;
-import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.RestResult;
 import com.log.blog.vo.View;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,13 +19,11 @@ import static com.log.blog.controller.AdminPublicController.SESSION_KEY_ADMIN_ID
 @RestController
 @RequestMapping("/api/admin")
 public class AdminPublicRestController {
-    private final AdminService adminService;
-    private final Validator passwordAgainValidator;
 
-    public AdminPublicRestController(@Qualifier("adminBasicService") AdminService adminService,
-                                     PasswordAgainValidator passwordAgainValidator) {
+    private final AdminService adminService;
+
+    public AdminPublicRestController(@Qualifier("adminBasicService") AdminService adminService) {
         this.adminService = adminService;
-        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @PostMapping
@@ -38,9 +34,6 @@ public class AdminPublicRestController {
             @ModelAttribute RestResult result,
             HttpServletResponse response
     ) {
-        if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(adminParam, errors);
-        }
         if (!errors.hasErrors() && adminService.register(adminParam)) {
             response.setStatus(HttpStatus.CREATED.value());
             return result.setDateMessage("register.successful", null);
@@ -85,4 +78,5 @@ public class AdminPublicRestController {
     public RestResult error401(@ModelAttribute RestResult result) {
         return result.setError(null, "error.admin.unauthorized", null);
     }
+
 }

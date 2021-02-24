@@ -1,12 +1,17 @@
 package com.log.blog.dto;
 
 import com.log.blog.validator.annotation.BasicEmail;
+import org.hibernate.validator.constraints.ScriptAssert;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+@ScriptAssert(groups = {UserParam.Register.class, UserParam.ResetPassword.class}, lang = "jexl",
+        script = "_.userPassword eq _.userPasswordAgain", alias = "_", reportOn = "userPasswordAgain",
+        message = "{passwordAgain.inconsistent}")
 public class UserParam {
+
     private String userId;
 
     @NotBlank(groups = {Register.class, Rename.class})

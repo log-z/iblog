@@ -5,11 +5,9 @@ import com.log.blog.entity.User;
 import com.log.blog.interceptor.UserRequiredInterceptor;
 import com.log.blog.service.UserAdvancedService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +16,9 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class UserController {
     private final UserAdvancedService userAdvancedService;
-    private final Validator passwordAgainValidator;
 
-    public UserController(UserAdvancedService userAdvancedService,
-                          @Qualifier("passwordAgainValidator") Validator passwordAgainValidator) {
+    public UserController(UserAdvancedService userAdvancedService) {
         this.userAdvancedService = userAdvancedService;
-        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @GetMapping("/logout")
@@ -99,17 +94,14 @@ public class UserController {
             Model model
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(userParam, errors);
-            if (!errors.hasErrors()) {
-                if (!user.getUserId().equals(userId))
-                    return null;  // 无权限
+            if (!user.getUserId().equals(userId))
+                return null;  // 无权限
 
-                if (userAdvancedService.updatePassword(
-                        userId, userParam.getOldUserPassword(), userParam.getUserPassword())) {
-                    return "redirect:/{userId}/info";
-                }
-                model.addAttribute("msg", "修改密码失败。");
+            if (userAdvancedService.updatePassword(
+                    userId, userParam.getOldUserPassword(), userParam.getUserPassword())) {
+                return "redirect:/{userId}/info";
             }
+            model.addAttribute("msg", "修改密码失败。");
         }
         return "user-update-password.jsp";
     }

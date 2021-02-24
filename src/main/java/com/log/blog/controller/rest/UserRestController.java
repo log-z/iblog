@@ -6,14 +6,12 @@ import com.log.blog.entity.User;
 import com.log.blog.service.UserAdvancedService;
 import com.log.blog.utils.AuthenticationUtils;
 import com.log.blog.utils.ConversionUtils;
-import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.*;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -37,16 +35,13 @@ public class UserRestController {
 
     private final UserAdvancedService userAdvancedService;
     private final ConversionService entity2VOConversionService;
-    private final Validator passwordAgainValidator;
 
     public UserRestController(
             UserAdvancedService userAdvancedService,
-            @Qualifier("entity2VOConversionService") ConversionService entity2VOConversionService,
-            PasswordAgainValidator passwordAgainValidator
+            @Qualifier("entity2VOConversionService") ConversionService entity2VOConversionService
     ) {
         this.userAdvancedService = userAdvancedService;
         this.entity2VOConversionService = entity2VOConversionService;
-        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @DeleteMapping("/session")
@@ -131,18 +126,15 @@ public class UserRestController {
             HttpServletResponse response
     ) {
         if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(userParam, errors);
-            if (!errors.hasErrors()) {
-                AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), userId);
-                boolean successful = userAdvancedService.updatePassword(
-                        userId, userParam.getOldUserPassword(), userParam.getUserPassword()
-                );
-                if (successful) {
-                    response.setStatus(HttpStatus.NO_CONTENT.value());
-                    return null;
-                } else {
-                    throw new RuntimeException();
-                }
+            AuthenticationUtils.checkOwnerAuthentication(user.getUserId(), userId);
+            boolean successful = userAdvancedService.updatePassword(
+                    userId, userParam.getOldUserPassword(), userParam.getUserPassword()
+            );
+            if (successful) {
+                response.setStatus(HttpStatus.NO_CONTENT.value());
+                return null;
+            } else {
+                throw new RuntimeException();
             }
         }
 

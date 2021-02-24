@@ -1,12 +1,17 @@
 package com.log.blog.dto;
 
-import com.log.blog.entity.Admin;
 import com.log.blog.validator.annotation.BasicEmail;
+import org.hibernate.validator.constraints.ScriptAssert;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
-public class AdminParam extends Admin {
+@ScriptAssert(groups = {AdminParam.Register.class, AdminParam.ResetPassword.class}, lang = "jexl",
+        script = "_.adminPassword eq _.adminPasswordAgain", alias = "_", reportOn = "adminPasswordAgain",
+        message = "{passwordAgain.inconsistent}")
+public class AdminParam {
+
     private String adminId;
 
     @NotBlank(groups = {Register.class, Rename.class})
@@ -18,7 +23,7 @@ public class AdminParam extends Admin {
     @BasicEmail(groups = {Register.class, Login.class}, message = "{email.invalid}")
     private String adminEmail;
 
-    @NotBlank(groups = {Register.class, Login.class})
+    @NotBlank(groups = {Register.class, Login.class, ResetPassword.class})
     @Pattern(regexp = "[a-z0-9]{64}", groups = {Register.class, Login.class}, message = "{password.invalid}")
     private String adminPassword;
 
@@ -29,6 +34,11 @@ public class AdminParam extends Admin {
     @NotBlank(groups = ResetPassword.class)
     @Pattern(regexp = "[a-z0-9]{64}", groups = ResetPassword.class, message = "{password.invalid}")
     private String oldAdminPassword;
+
+    private boolean fuzzySearch = false;
+
+    @Valid
+    private PageRange pageRange = new PageRange();
 
     public interface Login {
     }
@@ -84,4 +94,29 @@ public class AdminParam extends Admin {
     public void setAdminPasswordAgain(String adminPasswordAgain) {
         this.adminPasswordAgain = adminPasswordAgain;
     }
+
+    public String getOldAdminPassword() {
+        return oldAdminPassword;
+    }
+
+    public void setOldAdminPassword(String oldAdminPassword) {
+        this.oldAdminPassword = oldAdminPassword;
+    }
+
+    public boolean isFuzzySearch() {
+        return fuzzySearch;
+    }
+
+    public void setFuzzySearch(boolean fuzzySearch) {
+        this.fuzzySearch = fuzzySearch;
+    }
+
+    public PageRange getPageRange() {
+        return pageRange;
+    }
+
+    public void setPageRange(PageRange pageRange) {
+        this.pageRange = pageRange;
+    }
+
 }

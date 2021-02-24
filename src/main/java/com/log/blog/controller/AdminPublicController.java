@@ -4,12 +4,10 @@ import com.log.blog.dto.AdminParam;
 import com.log.blog.entity.Admin;
 import com.log.blog.service.AdminService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import com.log.blog.validator.PasswordAgainValidator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,12 +20,9 @@ import javax.servlet.http.HttpSession;
 public class AdminPublicController {
     public final static String SESSION_KEY_ADMIN_IDENTITY = "adminIdentity";
     private final AdminService adminService;
-    private final Validator passwordAgainValidator;
 
-    public AdminPublicController(@Qualifier("adminBasicService") AdminService adminService,
-                                 PasswordAgainValidator passwordAgainValidator) {
+    public AdminPublicController(@Qualifier("adminBasicService") AdminService adminService) {
         this.adminService = adminService;
-        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @GetMapping("/register")

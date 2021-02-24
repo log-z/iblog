@@ -4,12 +4,10 @@ import com.log.blog.entity.User;
 import com.log.blog.service.ArticleService;
 import com.log.blog.service.UserService;
 import com.log.blog.utils.HtmlEscapeUtils;
-import com.log.blog.validator.PasswordAgainValidator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,16 +19,13 @@ public class UserPublicController {
     private static final int LIST_ITEM_NUMBER = 10;
     private final UserService userService;
     private final ArticleService articleService;
-    private final Validator passwordAgainValidator;
 
     public UserPublicController(
             @Qualifier("userBasicService") UserService userService,
-            @Qualifier("articleBasicService") ArticleService articleService,
-            PasswordAgainValidator passwordAgainValidator
+            @Qualifier("articleBasicService") ArticleService articleService
     ) {
         this.userService = userService;
         this.articleService = articleService;
-        this.passwordAgainValidator = passwordAgainValidator;
     }
 
 //    @GetMapping("/register")

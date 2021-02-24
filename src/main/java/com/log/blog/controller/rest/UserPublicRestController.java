@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.log.blog.dto.UserParam;
 import com.log.blog.entity.User;
 import com.log.blog.service.UserService;
-import com.log.blog.validator.PasswordAgainValidator;
 import com.log.blog.vo.RestResult;
 import com.log.blog.vo.UserVO;
 import com.log.blog.vo.View;
@@ -13,7 +12,6 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -31,16 +29,13 @@ public class UserPublicRestController {
 
     private final UserService userService;
     private final ConversionService restConversionService;
-    private final Validator passwordAgainValidator;
 
     public UserPublicRestController(
             @Qualifier("userBasicService") UserService userService,
-            @Qualifier("entity2VOConversionService") ConversionService restConversionService,
-            PasswordAgainValidator passwordAgainValidator
+            @Qualifier("entity2VOConversionService") ConversionService restConversionService
     ) {
         this.userService = userService;
         this.restConversionService = restConversionService;
-        this.passwordAgainValidator = passwordAgainValidator;
     }
 
     @PostMapping
@@ -49,10 +44,8 @@ public class UserPublicRestController {
             @Validated(UserParam.Register.class) UserParam userParam,
             BindingResult errors,
             @ModelAttribute RestResult result,
-            HttpServletResponse response) {
-        if (!errors.hasErrors()) {
-            passwordAgainValidator.validate(userParam, errors);
-        }
+            HttpServletResponse response
+    ) {
         if (!errors.hasErrors() && userService.register(userParam)) {
             response.setStatus(HttpStatus.CREATED.value());
             return result.setDateMessage("register.successful", null);
